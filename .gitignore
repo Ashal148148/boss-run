@@ -1,2 +1,4 @@
 venv
 .nicegui
+*.db
+__pycache__

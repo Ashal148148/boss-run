@@ -1,9 +1,10 @@
+from fastapi import Request
 from nicegui import ui, app
 from fastapi.responses import RedirectResponse
 
 
 @ui.page('/login')
-def login_page() -> None:
+def login_page(r: Request) -> None:
     def try_login() -> None:  # local function to avoid passing username and password as arguments
         if 'hi' == password.value:
             app.storage.user.update({'username': username.value, 'authenticated': True})
