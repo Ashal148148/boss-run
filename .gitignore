@@ -1,4 +1,5 @@
 venv
 .nicegui
 *.db
+*.sqlite
 __pycache__
