@@ -4,7 +4,7 @@ from fastapi.responses import RedirectResponse
 
 
 @ui.page('/login')
-def login_page(r: Request) -> None:
+def login_page(request: Request) -> None:
     def try_login() -> None:  # local function to avoid passing username and password as arguments
         if 'hi' == password.value:
             app.storage.user.update({'username': username.value, 'authenticated': True})

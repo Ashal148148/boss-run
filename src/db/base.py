@@ -1,14 +1,16 @@
-from sqlalchemy import Column, Integer, PrimaryKeyConstraint, String
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, PrimaryKeyConstraint, String, func
 from sqlalchemy.orm import DeclarativeBase
 
 from src.settings import settings
 
 
 class Base(DeclarativeBase):
-    pass
-
-class User(Base):
-    __tablename__ = "User"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    ign = Column(String(settings.db.ign_max_len))
+    def __repr__(self) -> str:
+        return "<{}({})>".format(
+            self.__class__.__name__,
+            ', '.join(
+                ["{}={}".format(k, repr(self.__dict__[k]))
+                    for k in sorted(self.__dict__.keys())
+                    if k[0] != '_']
+            )
+        )
