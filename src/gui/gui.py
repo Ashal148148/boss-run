@@ -4,6 +4,7 @@ from nicegui import app, ui
 from src.crud import user_crud
 from sqlalchemy.orm import Session
 from .dependencies import get_session
+from .calculator import calculator
 
 
 @ui.page('/')
@@ -16,3 +17,4 @@ def root(request: Request, session: Session = Depends(get_session)) -> None:
         print("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", b)
     print("sassssssssssssssssssssssssss", a)
     ui.button("Click me", on_click=lambda x: print(x))
+
