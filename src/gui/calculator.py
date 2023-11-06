@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from .dependencies import get_session
 from ..wash_calculator import Player, jobs, Equipment
 
-@ui.page('/calculator')
+@ui.page('/')
 def calculator(request: Request, session: Session = Depends(get_session)) -> None:
     page_manager: Dict[str, Player | str, List[Player]] = {'active_player': Player(350, jobs['thief'], 'AshalNL', 10), 'standby': []}
     int_gears: List[Equipment] = []
@@ -30,9 +30,33 @@ def calculator(request: Request, session: Session = Depends(get_session)) -> Non
                 player_card.refresh()
             ui.button("let's go", on_click=on_click_lets_go)
             def level_up():
-                page_manager["active_player"].level_up(int_gears)
+                page_manager["active_player"].progress(1, False, int_gears)
                 player_card.refresh()
             ui.button("Level Up", on_click=level_up)
+            def on_toaggle_add_int():
+                page_manager["active_player"].is_adding_int = not page_manager["active_player"].is_adding_int
+                print(page_manager["active_player"])
+            ui.checkbox('Add INT', value=page_manager["active_player"].is_adding_int, on_change=on_toaggle_add_int)
+            def mana_wash():
+                page_manager["active_player"].mp_wash(1)
+                player_card.refresh()
+            ui.button('1 Mana wash', on_click=mana_wash)
+            def full_mana_wash():
+                page_manager["active_player"].mp_wash()
+                player_card.refresh()
+            ui.button('Full Mana wash', on_click=full_mana_wash)
+            def hp_wash():
+                page_manager["active_player"].hp_wash(1)
+                player_card.refresh()
+            ui.button('1 HP wash', on_click=hp_wash)
+            def full_hp_wash():
+                page_manager["active_player"].hp_wash()
+                player_card.refresh()
+            ui.button('Full HP wash', on_click=full_hp_wash)
+            def reset_INT():
+                page_manager["active_player"].fix_char()
+                player_card.refresh()
+            ui.button('Reset INT', on_click=reset_INT)
             player_card(page_manager, int_gears)
 
         with ui.tab_panel(tab_two):
@@ -53,7 +77,7 @@ def calculator(request: Request, session: Session = Depends(get_session)) -> Non
                 int_gears.append( Equipment("shield", 'pan shield',10,7))
                 int_gears.append( Equipment("eye", 'raccun',45, 11))
                 int_gears.append(Equipment("cape", 'ragged cape', 32, 9))
-                int_gears.append(Equipment("cape", 'ragged cape', 50, 12))
+                int_gears.append(Equipment("cape", 'yellow cape', 50, 12))
                 int_gears.append(Equipment("cape", 'cwkpq cape',80, 18))
                 int_gears.append(Equipment("shoe", 'slime shoe',30, 1))
                 int_gears.append(Equipment("glove", 'red markers', 20, 11))
@@ -98,3 +122,7 @@ def player_card(page_manager: Dict[str, Player], int_gears: List[Equipment]):
         ui.label(f"Total health: {page_manager['active_player'].health}")
         ui.label(f"Fresh AP: {page_manager['active_player'].fresh_AP}")
         ui.label(f"Stale AP: {page_manager['active_player'].stale_ap}")
+        ui.label(f"Main stat: {page_manager['active_player'].main_stat}")
+        ui.label(f"AP resets spent: {page_manager['active_player'].washes}")
+        ui.label(f"AP resets cost: {page_manager['active_player'].washes * 3300}NX")
+        ui.label("AP resets cost in time: %.2f years" % (page_manager['active_player'].washes * 3300 / (5000 * 365)))

@@ -7,7 +7,7 @@ from .dependencies import get_session
 from .calculator import calculator
 
 
-@ui.page('/')
+@ui.page('/asd')
 def root(request: Request, session: Session = Depends(get_session)) -> None:
     ui.label('hello world, how are you today')
     print(request.session["id"])

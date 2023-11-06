@@ -14,10 +14,9 @@ class Player:
     maple_warrior_precent: int
     bonus_mana: int
     bonus_HP: int
-    mana_cost: int
     fresh_AP: int
     washes: int
-    is_washing: int
+    is_adding_int: bool
     stale_ap: int
     name: str
     job: Job
@@ -56,7 +55,7 @@ class Player:
         self.maple_warrior_precent = mw
         self.fresh_AP = 0
         self.washes = 0
-        self.is_washing = True
+        self.is_adding_int = True
         self.stale_ap = 0
         self.name = name
         self.job = job
@@ -71,7 +70,7 @@ class Player:
 
     def add_int(self):
         if self.INT < self.int_goal:
-            if self.level > 7 and self.level <=10:
+            if self.level >= 7 and self.level <=10:
                 self.main_stat += self.fresh_AP
                 self.INT += self.stale_ap
             else:
@@ -121,21 +120,21 @@ class Player:
         self.washes += washes
 
 
-    def progress(self, lvls: int, mana_wash: bool):
+    def progress(self, lvls: int, mana_wash: bool, int_gears: List[Equipment]):
         for _ in range(lvls):
-            self.level_up()
-            if self.is_washing and mana_wash:
+            self.level_up(int_gears)
+            if self.is_adding_int and mana_wash:
                 self.mp_wash()
                 self.add_int()
                 continue
-            if self.is_washing:
+            if self.is_adding_int:
                 self.add_int()
             if mana_wash:
                 self.mp_wash()
             
 
     def fix_char(self):
-        self.is_washing = False
+        self.is_adding_int = False
         self.washes += self.INT - 4
         self.INT = 4
 
