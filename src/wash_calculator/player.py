@@ -43,6 +43,8 @@ class Player:
 
     @property
     def health(self):
+        print(self.level)
+        print(self.job.base_hp)
         return self.bonus_HP + self.job.base_hp[self.level - 1]
     
     def __init__(self, int_goal: int, job: Job, name: str, mw: int) -> None:
@@ -59,7 +61,20 @@ class Player:
         self.stale_ap = 0
         self.name = name
         self.job = job
-        self.main_stat = 4
+        self.main_stat = 5
+
+    def reset_player(self) -> None:
+        self.level = 1
+        self.equipment = []
+        self.bonus_HP = 0
+        self.bonus_mana = 0
+        self.INT = 10
+        self.fresh_AP = 0
+        self.washes = 0
+        self.is_adding_int = True
+        self.stale_ap = 0
+        self.main_stat = 5
+
 
     def level_up(self, int_gears: List[Equipment]):
         self.bonus_mana += self.bonus_mana_on_lvl_up
