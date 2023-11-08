@@ -21,7 +21,6 @@ def do_the_stuff(player: Player,int_gears: List[Equipment], level_goal: int, hp_
     min_total_cost = first - overwashes + (player.washes - second)
     min_first = first
     min_overwashes = overwashes
-    min_second = second
     print(f"total cost of washes {min_total_cost}")
     while True:
         abu_crazy -= abu_step
@@ -50,7 +49,6 @@ def do_the_stuff(player: Player,int_gears: List[Equipment], level_goal: int, hp_
             min_total_cost = total_cost
             min_first = first
             min_overwashes = overwashes
-            min_second = second
 
 if __name__ == "__main__":
     int_gears: List[Equipment] = []
