@@ -3,7 +3,7 @@ from src.wash_calculator.player import Player
 from src.wash_calculator.equipment import Equipment
 from src.wash_calculator.job import jobs
 
-def do_the_stuff(player: Player,int_gears: List[Equipment], level_goal: int, hp_goal: int) -> Tuple[int,int, int, bool]:
+def do_the_stuff(player: Player,int_gears: List[Equipment], level_goal: int, hp_goal: int) -> Tuple[int,int, int, int, bool]:
     player = player.copy()
     abu_crazy = 20
     abu_step = 10
@@ -19,7 +19,7 @@ def do_the_stuff(player: Player,int_gears: List[Equipment], level_goal: int, hp_
     print(f"ok so the first run cost {first} mana washes, hp reached was {player.health}")
     if player.health >= hp_goal:
         over_hp = int(player.health - hp_goal) 
-        over_mp = int(over_hp * player.job.mp_cost / player.job.base_hp_gain + player.job.hp_gain_skill)
+        over_mp = int(over_hp * player.job.mp_cost / (player.job.base_hp_gain + player.job.hp_gain_skill))
         overwashes = int(over_mp / player.bonus_mana_from_ap)
         if overwashes > first:
             overwashes = first
@@ -48,7 +48,7 @@ def do_the_stuff(player: Player,int_gears: List[Equipment], level_goal: int, hp_
         # print(f"ok so the {abu_crazy} INT run cost {first} mana washes, hp reached was {player.health}")
         if player.health >= hp_goal:
             over_hp = int(player.health - hp_goal) 
-            over_mp = int(over_hp * player.job.mp_cost / player.job.base_hp_gain + player.job.hp_gain_skill)
+            over_mp = int(over_hp * player.job.mp_cost / (player.job.base_hp_gain + player.job.hp_gain_skill))
             overwashes = int(over_mp / player.bonus_mana_from_ap)
             if overwashes > first:
                 overwashes = first
@@ -62,14 +62,16 @@ def do_the_stuff(player: Player,int_gears: List[Equipment], level_goal: int, hp_
             min_overwashes = overwashes
             min_abu_crazy = abu_crazy
             max_hp = player.health
-    print(f"i have found the best base int: {min_abu_crazy} and it is accompanied by {min_first - min_overwashes} washes")
     player.int_goal = min_abu_crazy
     player.reset_player()
     player.progress(level_goal - 1, False, int_gears)
-    player.mp_wash()  
+    player.mp_wash()
+    bonus_mana = player.bonus_mana
     player.hp_wash()
+    player.fix_char()
     best_health = int(player.health - min_overwashes * (min_abu_crazy / 10) * (player.job.base_hp_gain + player.job.hp_gain_skill) / player.job.mp_cost)
-    return min_abu_crazy, min_first - min_overwashes, best_health, success
+    print(f"i have found the best base int: {min_abu_crazy} and it is accompanied by {min_first - min_overwashes} washes, {bonus_mana}")
+    return min_abu_crazy, min_first - min_overwashes, best_health, player.washes, success
 
 if __name__ == "__main__":
     int_gears: List[Equipment] = []

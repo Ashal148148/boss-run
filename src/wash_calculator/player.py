@@ -130,7 +130,11 @@ class Player:
         else:
             washes = max_amount
         for _ in range(washes):
-            self.bonus_HP += self.job.hp_gain(self.level)
+            self.bonus_HP += self.job.base_hp_gain
+            if self.is_adding_fresh_ap_into_hp and self.level > self.job.hp_gain_skill_level and self.fresh_AP > 0:
+                self.fresh_AP -= 1
+                self.stale_ap += 1
+                self.bonus_HP += self.job.hp_gain_skill
             self.bonus_mana -= self.job.mp_cost
         self.washes += washes
 

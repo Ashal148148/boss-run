@@ -115,8 +115,8 @@ def calculator(request: Request, session: Session = Depends(get_session)) -> Non
         hp_goal = ui.number('HP goal')
         lvl_goal = ui.number('level goal')
         def on_calculate_click():
-            base_int, washes, health, success = do_the_stuff(page_manager['active_player'], int_gears, int(lvl_goal.value), int(hp_goal.value))
-            da_thing_results(int(lvl_goal.value), int(hp_goal.value), base_int, washes, health, success)
+            base_int, washes, health, total_washes, success = do_the_stuff(page_manager['active_player'], int_gears, int(lvl_goal.value), int(hp_goal.value))
+            da_thing_results(int(lvl_goal.value), int(hp_goal.value), base_int, washes, health, total_washes, success)
             da_thing_results.refresh()
         ui.button('do the thing', on_click=on_calculate_click)
             
@@ -167,7 +167,7 @@ def gear_display(gears: List[Equipment]):
             ui.label(f"INT: {gear.INT}")
 
 @ui.refreshable
-def da_thing_results(lvl, health_goal,base_int, washes, health, is_seccesful):
+def da_thing_results(lvl, health_goal,base_int, washes, health, total_washes, is_seccesful):
     if is_seccesful:
         color = 'bg-green-100'
     else:
@@ -177,4 +177,5 @@ def da_thing_results(lvl, health_goal,base_int, washes, health, is_seccesful):
         ui.label(f'the most optimal int is {base_int}')
         ui.label(f'acompanied by {washes} MP washes')
         ui.label(f'HP after fully washing is: {health}')
-        ui.label(f'Total AP reset cost: {base_int - 4 + washes}')
+        ui.label(f'Washing AP reset cost: {base_int - 4 + washes}')
+        ui.label(f'Total ap reset costs (including resetting the MP to HP): {total_washes}')

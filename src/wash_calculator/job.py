@@ -22,12 +22,6 @@ class Job:
         self.base_hp = base_hp
         self.hp_gain_skill = hp_gain_skill
         self.hp_gain_skill_level = hp_gain_skill_level
-
-    def hp_gain(self, level: int):
-        if level >= self.hp_gain_skill_level:
-            return self.base_hp_gain + self.hp_gain_skill
-        else:
-            return self.base_hp_gain 
         
     def __str__(self):
         return f"<Job(name={self.name}, mp_cost={self.mp_cost}, base_hp_gain={self.base_hp_gain}, hp_gain_skill={self.hp_gain_skill}, hp_gain_skill_level={self.hp_gain_skill_level})>"
