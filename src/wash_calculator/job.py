@@ -30,7 +30,7 @@ class Job:
             return self.base_hp_gain 
         
     def __str__(self):
-        return self.name
+        return f"<Job(name={self.name}, mp_cost={self.mp_cost}, base_hp_gain={self.base_hp_gain}, hp_gain_skill={self.hp_gain_skill}, hp_gain_skill_level={self.hp_gain_skill_level})>"
 
 
 thief = Job(
@@ -47,16 +47,16 @@ archer = Job(
 )
 dk = Job(
     "Spearman",
-    50,
     4,
+    50,
     DK_BASE_HP,
     30,
     14
 )
 hero_pala = Job(
     "Hero/Paladin",
-    50,
     4,
+    50,
     HERO_PAGE_BASE_HP,
     30,
     14

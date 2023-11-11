@@ -17,6 +17,7 @@ class Player:
     fresh_AP: int
     washes: int
     is_adding_int: bool
+    is_adding_fresh_ap_into_hp: bool
     stale_ap: int
     name: str
     job: Job
@@ -43,8 +44,6 @@ class Player:
 
     @property
     def health(self):
-        print(self.level)
-        print(self.job.base_hp)
         return self.bonus_HP + self.job.base_hp[self.level - 1]
     
     def __init__(self, int_goal: int, job: Job, name: str, mw: int) -> None:
@@ -62,6 +61,7 @@ class Player:
         self.name = name
         self.job = job
         self.main_stat = 5
+        self.is_adding_fresh_ap_into_hp = False
 
     def reset_player(self) -> None:
         self.level = 1
@@ -152,6 +152,21 @@ class Player:
         self.is_adding_int = False
         self.washes += self.INT - 4
         self.INT = 4
+
+    def copy(self):
+        new_guy = Player(self.int_goal, self.job, self.name, self.maple_warrior_precent)
+        new_guy.level = self.level
+        new_guy.equipment = self.equipment
+        new_guy.bonus_HP = self.bonus_HP
+        new_guy.bonus_mana = self.bonus_mana
+        new_guy.INT = self.INT
+        new_guy.fresh_AP = self.fresh_AP
+        new_guy.washes = self.washes
+        new_guy.is_adding_int = self.is_adding_int
+        new_guy.stale_ap = self.stale_ap
+        new_guy.main_stat = self.main_stat
+        new_guy.is_adding_fresh_ap_into_hp = self.is_adding_fresh_ap_into_hp
+        return new_guy
 
     def __str__(self) -> str:
         return f"name: {self.name} job: {self.job} lvl: {self.level} base INT: {self.INT} total INT: {self.total_int} fresh ap: {self.fresh_AP} bonus MP: {self.bonus_mana} bonus HP: {self.bonus_HP} total HP: {self.health} reset scrolls: {self.washes} cost: {(self.washes) * 3300}nx"

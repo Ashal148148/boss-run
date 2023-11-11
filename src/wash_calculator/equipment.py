@@ -17,3 +17,6 @@ class Equipment:
     
     def __repr__(self) -> str:
         return f"<Equipment: {self.category}, {self.name}, INT={self.INT}, level req={self.level_req}>"
+    
+    def __eq__(self, __value: object) -> bool:
+        return self.__repr__() == __value.__repr__()
