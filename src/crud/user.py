@@ -6,8 +6,8 @@ from .base import CRUDBase
 from src.db import User
 
 class UserCRUD(CRUDBase):
-    def read(self, session: Session, session_id: PositiveInt):
-        r = session.execute(select(User).where(User.session_id == session_id)).all()
+    def read(self, session: Session, session_id: PositiveInt) -> User:
+        r, = session.execute(select(User).where(User.session_id == session_id)).all()[0]
         return r
     
     def create(self, session: Session, session_id: UUID):

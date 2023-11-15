@@ -1,8 +1,9 @@
+from functools import partial
 from typing import Annotated, Callable, Dict, List
 from fastapi import Cookie, Request, Depends
 from nicegui import app, ui
 import nicegui
-from src.crud import user_crud
+from src.crud import equipment_crud, user_crud
 from sqlalchemy.orm import Session
 from .dependencies import get_session
 from ..wash_calculator import Player, jobs, Equipment, do_the_stuff
@@ -10,7 +11,11 @@ from ..wash_calculator import Player, jobs, Equipment, do_the_stuff
 @ui.page('/')
 def calculator(request: Request, session: Session = Depends(get_session)) -> None:
     page_manager: Dict[str, Player | str, List[Player]] = {'active_player': Player(350, jobs['thief'], 'AshalNL', 10), 'standby': []}
+    gears_from_db = equipment_crud.read_by_session_id(session, request.session['id'])
     int_gears: List[Equipment] = []
+    for g, in gears_from_db:
+        int_gears.append(Equipment(g.catagory, g.name, g.level_requirement, g.INT, g.id))
+   
     ui.label("Welcome to BattleCat's HP washing calculator (you might have to scroll down a bit)")
     ui.label("Before we begin ill need some info from you")
     with ui.tabs().classes('w-full') as tabs:
@@ -44,20 +49,15 @@ def calculator(request: Request, session: Session = Depends(get_session)) -> Non
 
             def add_gear():
                 if eq_category.value and eq_name.value and eq_lvl_req.value and eq_INT.value:
-                    int_gears.append(Equipment(eq_category.value, eq_name.value, int(eq_lvl_req.value), int(eq_INT.value)))
+                    new_gear = equipment_crud.create(session, request.session["id"], eq_category.value, eq_name.value, int(eq_lvl_req.value), int(eq_INT.value))
+                    int_gears.append(Equipment(eq_category.value, eq_name.value, int(eq_lvl_req.value), int(eq_INT.value), new_gear.id))                    
                     gears_carousel.refresh()
                 else:
                     ui.notify("please make sure to fill all fields")
 
-            def on_click_remove_item(e):
-                clicked_button: nicegui.ui.button = e.sender
-                for item in int_gears:
-                    if item.name == clicked_button.text.replace('remove ', ''):
-                        int_gears.remove(item)
-                gears_carousel.refresh()
             ui.button("gears", on_click=fun)
             ui.button("add gear", on_click=add_gear)
-            gears_carousel(int_gears, on_click_remove_item)
+            gears_carousel(int_gears, session)
             
         with ui.tab_panel(tab_two):
             name = ui.input("name", placeholder='')
@@ -123,20 +123,27 @@ def calculator(request: Request, session: Session = Depends(get_session)) -> Non
 
 
 @ui.refreshable
-def gears_carousel(int_gears: List[Equipment], remove_item: Callable):
+def gears_carousel(int_gears: List[Equipment], session: Session):
     gear_tabs = []
     with ui.tabs().classes('w-half') as tabs:
         for gear in int_gears:
             gear_tabs.append(ui.tab(gear.name))
     if gear_tabs:
         with ui.tab_panels(tabs, value=gear_tabs[0]):
-            for t, gear in zip(gear_tabs, int_gears): 
+            for t, gear in zip(gear_tabs, int_gears):             
+                def on_click_remove(int_gearz, gearz):
+                    print(int_gearz)
+                    print(gearz)
+                    int_gearz.remove(gearz)
+                    equipment_crud.delete(session, gearz.id)
+                    gears_carousel.refresh()
+                p = partial(on_click_remove, int_gears, gear)
                 with ui.tab_panel(t):
                     ui.label(f"category: {gear.category}")
                     ui.label(f"name: {gear.name}")
                     ui.label(f"level requirement: {gear.level_req}")
                     ui.label(f"INT: {gear.INT}")
-                    ui.button(f'remove {gear.name}', color='red', on_click=lambda e: remove_item(e))
+                    ui.button(f'x', color='red', on_click=p)
 
 
 @ui.refreshable
@@ -153,6 +160,8 @@ def player_card(page_manager: Dict[str, Player], int_gears: List[Equipment]):
         ui.label(f"Fresh AP: {page_manager['active_player'].fresh_AP}")
         ui.label(f"Stale AP: {page_manager['active_player'].stale_ap}")
         ui.label(f"Main stat: {page_manager['active_player'].main_stat}")
+        ui.label(f"Fresh AP added to mana: {page_manager['active_player'].mp_washes}")
+        ui.label(f"Fresh AP added to health: {page_manager['active_player'].fresh_ap_into_hp_total}")
         ui.label(f"AP resets spent: {page_manager['active_player'].washes}")
         ui.label(f"AP resets cost: {page_manager['active_player'].washes * 3300}NX")
         ui.label("AP resets cost in time: %.2f years" % (page_manager['active_player'].washes * 3300 / (5000 * 365)))

@@ -15,7 +15,7 @@ class Job:
     hp_gain_skill: int
     hp_gain_skill_level: int
 
-    def __init__(self, name: str, mp_cost: int, hp_gain: int, base_hp: List[int], hp_gain_skill: int = 0, hp_gain_skill_level: int = 0) -> None:
+    def __init__(self, name: str, mp_cost: int, hp_gain: int, base_hp: List[int], hp_gain_skill: int = 0, hp_gain_skill_level: int = 200) -> None:
         self.name = name
         self.mp_cost = mp_cost
         self.base_hp_gain = hp_gain

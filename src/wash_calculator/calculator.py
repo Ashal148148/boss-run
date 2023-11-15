@@ -11,23 +11,15 @@ def do_the_stuff(player: Player,int_gears: List[Equipment], level_goal: int, hp_
     player.reset_player()
     player.int_goal = abu_crazy
     player.progress(level_goal - 1, False, int_gears) 
-    player.mp_wash()  
-    first = player.washes
-    player.hp_wash()
+    while player.fresh_AP and player.health < hp_goal:
+        player.mp_wash(1)
+        player.hp_wash()
+    first = player.mp_washes    
     second = player.washes
-    overwashes = 0
     print(f"ok so the first run cost {first} mana washes, hp reached was {player.health}")
-    if player.health >= hp_goal:
-        over_hp = int(player.health - hp_goal) 
-        over_mp = int(over_hp * player.job.mp_cost / (player.job.base_hp_gain + player.job.hp_gain_skill))
-        overwashes = int(over_mp / player.bonus_mana_from_ap)
-        if overwashes > first:
-            overwashes = first
-        print(f"removing {overwashes} overwashes")   
     player.fix_char()
-    min_total_cost = first - overwashes + (player.washes - second)
+    min_total_cost = first + player.washes - second
     min_first = first
-    min_overwashes = overwashes
     min_abu_crazy = abu_crazy
     max_hp = player.health
     print(f"total cost of washes {min_total_cost}")
@@ -36,42 +28,34 @@ def do_the_stuff(player: Player,int_gears: List[Equipment], level_goal: int, hp_
         player.int_goal = abu_crazy
         player.reset_player()
         player.progress(level_goal - 1, False, int_gears) 
-        player.mp_wash()  
-        first = player.washes
-        player.hp_wash()
+        while player.fresh_AP and player.health < hp_goal:
+            player.mp_wash(1)
+            player.hp_wash()
+        first = player.mp_washes
         second = player.washes
-        overwashes = 0
         if player.health < hp_goal:
             print(f"{abu_crazy}INT: i have failed HP reached was: {player.health}")
         else:
             success = True
         # print(f"ok so the {abu_crazy} INT run cost {first} mana washes, hp reached was {player.health}")
-        if player.health >= hp_goal:
-            over_hp = int(player.health - hp_goal) 
-            over_mp = int(over_hp * player.job.mp_cost / (player.job.base_hp_gain + player.job.hp_gain_skill))
-            overwashes = int(over_mp / player.bonus_mana_from_ap)
-            if overwashes > first:
-                overwashes = first
-            print(f"removing {overwashes} overwashes")   
         player.fix_char()
-        total_cost = first - overwashes + (player.washes - second)
-        print(f"{abu_crazy} INT: total cost of washes {total_cost}")
+        total_cost = first + (player.washes - second)
+        print(f"{player.name} with {abu_crazy} INT: total cost of washes {total_cost}")
         if total_cost < min_total_cost or max_hp < player.health and max_hp < hp_goal:
             min_total_cost = total_cost
             min_first = first
-            min_overwashes = overwashes
             min_abu_crazy = abu_crazy
             max_hp = player.health
     player.int_goal = min_abu_crazy
     player.reset_player()
     player.progress(level_goal - 1, False, int_gears)
-    player.mp_wash()
-    bonus_mana = player.bonus_mana
-    player.hp_wash()
+    while player.fresh_AP and player.health < hp_goal:
+        player.mp_wash(1)
+        player.hp_wash()
     player.fix_char()
-    best_health = int(player.health - min_overwashes * (min_abu_crazy / 10) * (player.job.base_hp_gain + player.job.hp_gain_skill) / player.job.mp_cost)
-    print(f"i have found the best base int: {min_abu_crazy} and it is accompanied by {min_first - min_overwashes} washes, {bonus_mana}")
-    return min_abu_crazy, min_first - min_overwashes, best_health, player.washes, success
+    best_health = player.health
+    print(f"i have found the best base int: {min_abu_crazy} and it is accompanied by {min_first} washes")
+    return min_abu_crazy, min_first, best_health, player.washes, success
 
 if __name__ == "__main__":
     int_gears: List[Equipment] = []

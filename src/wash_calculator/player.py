@@ -4,8 +4,6 @@ from .equipment import Equipment
 from .job import Job
 
 
-
-
 class Player:
     INT: int
     int_goal: int
@@ -16,12 +14,14 @@ class Player:
     bonus_HP: int
     fresh_AP: int
     washes: int
+    mp_washes: int
     is_adding_int: bool
     is_adding_fresh_ap_into_hp: bool
     stale_ap: int
     name: str
     job: Job
     main_stat: int
+    fresh_ap_into_hp_total: int
 
     @property
     def total_int(self):
@@ -61,7 +61,9 @@ class Player:
         self.name = name
         self.job = job
         self.main_stat = 5
-        self.is_adding_fresh_ap_into_hp = False
+        self.is_adding_fresh_ap_into_hp = True
+        self.mp_washes = 0
+        self.fresh_ap_into_hp_total = 0
 
     def reset_player(self) -> None:
         self.level = 1
@@ -74,6 +76,9 @@ class Player:
         self.is_adding_int = True
         self.stale_ap = 0
         self.main_stat = 5
+        self.mp_washes = 0
+        self.is_adding_fresh_ap_into_hp = True
+        self.fresh_ap_into_hp_total = 0
 
 
     def level_up(self, int_gears: List[Equipment]):
@@ -122,6 +127,7 @@ class Player:
         self.fresh_AP -= washes
         self.stale_ap += washes
         self.washes += washes
+        self.mp_washes += washes
         # print(f"at lvl {self.level} mp wash gain was: {self.bonus_mana - before}")
 
     def hp_wash(self, max_amount=9999):
@@ -135,6 +141,7 @@ class Player:
                 self.fresh_AP -= 1
                 self.stale_ap += 1
                 self.bonus_HP += self.job.hp_gain_skill
+                self.fresh_ap_into_hp_total += 1
             self.bonus_mana -= self.job.mp_cost
         self.washes += washes
 
@@ -170,6 +177,8 @@ class Player:
         new_guy.stale_ap = self.stale_ap
         new_guy.main_stat = self.main_stat
         new_guy.is_adding_fresh_ap_into_hp = self.is_adding_fresh_ap_into_hp
+        new_guy.mp_washes = self.mp_washes
+        new_guy.fresh_ap_into_hp_total = self.fresh_ap_into_hp_total 
         return new_guy
 
     def __str__(self) -> str:

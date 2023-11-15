@@ -15,6 +15,6 @@ def root(request: Request, session: Session = Depends(get_session)) -> None:
     if not a:
         b = user_crud.create(session=session, session_id=request.session["id"])
         print("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", b)
-    print("sassssssssssssssssssssssssss", a)
+    print("sassssssssssssssssssssssssss", a.id)
     ui.button("Click me", on_click=lambda x: print(x))
 
