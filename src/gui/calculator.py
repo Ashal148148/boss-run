@@ -3,6 +3,7 @@ from typing import Annotated, Callable, Dict, List
 from fastapi import Cookie, Request, Depends
 from nicegui import app, ui
 import nicegui
+from ..identity import accept_user
 from src.crud import equipment_crud, user_crud
 from sqlalchemy.orm import Session
 from .dependencies import get_session
@@ -10,6 +11,7 @@ from ..wash_calculator import Player, jobs, Equipment, do_the_stuff
 
 @ui.page('/')
 def calculator(request: Request, session: Session = Depends(get_session)) -> None:
+    accept_user(request, session)
     page_manager: Dict[str, Player | str, List[Player]] = {'active_player': Player(350, jobs['thief'], 'AshalNL', 10), 'standby': []}
     gears_from_db = equipment_crud.read_by_session_id(session, request.session['id'])
     int_gears: List[Equipment] = []
