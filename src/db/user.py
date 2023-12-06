@@ -9,7 +9,7 @@ class User(Base):
     __tablename__ = "User"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    session_id = Column(String(settings.db.ign_max_len))
+    session_id = Column(String(settings.db.tables.ign_max_len))
     last_seen = Column(DateTime, default=func.now())
     equipment = relationship("Equipment", back_populates="user")
 

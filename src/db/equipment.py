@@ -9,8 +9,8 @@ class Equipment(Base):
     __tablename__ = "Equipment"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(settings.db.general_string_length))
-    catagory = Column(String(settings.db.general_string_length))
+    name = Column(String(settings.db.tables.general_string_length))
+    catagory = Column(String(settings.db.tables.general_string_length))
     level_requirement = Column(Integer)
     INT = Column(Integer)
     user_id = mapped_column(ForeignKey('User.id'))

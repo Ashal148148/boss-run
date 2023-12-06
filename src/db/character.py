@@ -8,4 +8,4 @@ class Character(Base):
     __tablename__ = "Character"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    ign = Column(String(settings.db.ign_max_len))
+    ign = Column(String(settings.db.tables.ign_max_len))
