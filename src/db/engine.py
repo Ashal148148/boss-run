@@ -6,7 +6,7 @@ from .base import Base
 from ..settings import settings
 
 
-engine = create_engine(str(settings.db.connection_string), echo=True)
+engine = create_engine(str(settings.db.connection_string), echo=False)
 
 if not database_exists(str(settings.db.connection_string)):
     Base.metadata.create_all(engine)

@@ -70,4 +70,4 @@ sair = Job(
     SAIR_BASE_HP
 )
 
-jobs = {"thief": thief , "archer": archer, "bucc": bucc, "sair": sair, "hero_pala": hero_pala, "dk":dk}
+jobs = {"Thief": thief , "Archer": archer, "Brawler": bucc, "Gunslinger": sair, "Hero/Paladin": hero_pala, "Spearman":dk}

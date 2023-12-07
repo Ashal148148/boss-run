@@ -16,13 +16,14 @@ def do_the_stuff(player: Player,int_gears: List[Equipment], level_goal: int, hp_
         player.hp_wash()
     first = player.mp_washes    
     second = player.washes
+    
     print(f"ok so the first run cost {first} mana washes, hp reached was {player.health}")
     player.fix_char()
     min_total_cost = first + player.washes - second
     min_first = first
     min_abu_crazy = abu_crazy
     max_hp = player.health
-    print(f"total cost of washes {min_total_cost}")
+    # print(f"total cost of washes {min_total_cost}")
     while abu_crazy < 700:
         abu_crazy += abu_step
         player.int_goal = abu_crazy
@@ -34,6 +35,7 @@ def do_the_stuff(player: Player,int_gears: List[Equipment], level_goal: int, hp_
         first = player.mp_washes
         second = player.washes
         if player.health < hp_goal:
+            pass
             print(f"{abu_crazy}INT: i have failed HP reached was: {player.health}")
         else:
             success = True
@@ -54,8 +56,8 @@ def do_the_stuff(player: Player,int_gears: List[Equipment], level_goal: int, hp_
         player.hp_wash()
     player.fix_char()
     best_health = player.health
-    print(f"i have found the best base int: {min_abu_crazy} and it is accompanied by {min_first} washes")
-    return min_abu_crazy, min_first, best_health, player.washes, success
+    print(f"[{player.name}] i have found the best base int: {min_abu_crazy} and it is accompanied by {min_first} washes")
+    return min_abu_crazy, min_first, best_health, player.washes, success, player.fresh_ap_into_hp_total
 
 if __name__ == "__main__":
     int_gears: List[Equipment] = []
@@ -74,5 +76,5 @@ if __name__ == "__main__":
     int_gears.append(Equipment("cape", 'cwkpq cape',80, 18))
     int_gears.append(Equipment("shoe", 'slime shoe',30, 1))
     int_gears.append(Equipment("glove", 'red markers', 20, 11))
-    player = Player(350, jobs['thief'], 'AshalNL', 10)
+    player = Player(350, jobs['Thief'], 'AshalNL', 10)
     do_the_stuff(player, int_gears, 155, 27885)

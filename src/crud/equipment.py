@@ -12,11 +12,9 @@ class EquipmentCRUD(CRUDBase):
         r = session.execute(select(Equipment).where(Equipment.id == id)).all()
         return r
     
-    def read_by_session_id(self, session: Session, session_id: UUID) -> List[Tuple[Equipment,]]:
-        user = user_crud.read(session=session, session_id=session_id)
-        r = session.execute(select(Equipment).where(Equipment.user_id == user.id)).all()
+    def read_by_session_id(self, session: Session, user_id: UUID) -> List[Tuple[Equipment,]]:        
+        r = session.execute(select(Equipment).where(Equipment.user_id == user_id)).all()
         return r
-
     
     def create(self, session: Session, session_id: UUID, catagory: str, name: str, level: int, INT: int):
         user = user_crud.read(session=session, session_id=session_id)

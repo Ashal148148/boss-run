@@ -17,10 +17,12 @@ class UserCRUD(CRUDBase):
     def create(self, session: Session, session_id: UUID):
         r = User(session_id=session_id)
         session.add(r)
+        session.commit()
         return r
     
     def delete(self, session: Session, id: PositiveInt):
         r = session.execute(delete(User).where(User.id == id))
+        session.commit()
         return r
 
 user_crud = UserCRUD()
