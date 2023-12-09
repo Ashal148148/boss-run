@@ -10,6 +10,8 @@ from .dependencies import get_session
 from ..schemas import PlayerSchema
 from ..wash_calculator import Player, jobs, Equipment, do_the_stuff
 
+print('loading calculator for the first time')
+
 @ui.page('/')
 def calculator(request: Request, session: Session = Depends(get_session)) -> None:
     user_id = accept_user(request, session)

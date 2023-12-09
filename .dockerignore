@@ -7,3 +7,6 @@ __pycache__
 .git
 .gitignore
 .env
+secrets
+.dockerignore
+.vscode
