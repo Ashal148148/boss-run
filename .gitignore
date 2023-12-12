@@ -6,3 +6,4 @@ __pycache__
 .idea
 secrets
 .vscode
+gha-creds-*.json
