@@ -43,7 +43,7 @@ jobs:
       with:
         token_format: 'access_token'
         workload_identity_provider: 'projects/669091186189/locations/global/workloadIdentityPools/github/providers/docker-images'
-        # service_account: 'my-service-account@my-project.iam.gserviceaccount.com'
+        service_account: 'github-actions@ferrous-depth-404215.iam.gserviceaccount.com'
 
     # Alternative option - authentication via credentials json
     # - id: 'auth'
