@@ -14,12 +14,14 @@ class Job:
     base_hp: List[int]
     hp_gain_skill: int
     hp_gain_skill_level: int
+    first_job_stat_requirement: int
 
-    def __init__(self, name: str, mp_cost: int, hp_gain: int, base_hp: List[int], hp_gain_skill: int = 0, hp_gain_skill_level: int = 200) -> None:
+    def __init__(self, name: str, mp_cost: int, hp_gain: int, base_hp: List[int], first_job_stat_requirement: int, hp_gain_skill: int = 0, hp_gain_skill_level: int = 200) -> None:
         self.name = name
         self.mp_cost = mp_cost
         self.base_hp_gain = hp_gain
         self.base_hp = base_hp
+        self.first_job_stat_requirement = first_job_stat_requirement
         self.hp_gain_skill = hp_gain_skill
         self.hp_gain_skill_level = hp_gain_skill_level
         
@@ -31,19 +33,22 @@ thief = Job(
     "Thief",
     12,
     16,
-    THIEF_ARCHER_BASE_HP
+    THIEF_ARCHER_BASE_HP,
+    25
 )
 archer = Job(
     "Archer",
     12,
     16,
-    THIEF_ARCHER_BASE_HP
+    THIEF_ARCHER_BASE_HP,
+    25
 )
 dk = Job(
     "Spearman",
     4,
     50,
     DK_BASE_HP,
+    35,
     30,
     14
 )
@@ -52,6 +57,7 @@ hero_pala = Job(
     4,
     50,
     HERO_PAGE_BASE_HP,
+    35,
     30,
     14
 )
@@ -61,13 +67,15 @@ bucc = Job(
     18,
     BUCC_BASE_HP,
     20,
+    20,
     34
 )
 sair = Job(
     "Gunslinger",
     16,
     18,
-    SAIR_BASE_HP
+    SAIR_BASE_HP,
+    20
 )
 
 jobs = {"Thief": thief , "Archer": archer, "Brawler": bucc, "Gunslinger": sair, "Hero/Paladin": hero_pala, "Spearman":dk}
