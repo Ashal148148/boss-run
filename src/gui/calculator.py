@@ -29,63 +29,69 @@ def calculator(request: Request, session: Session = Depends(get_session)) -> Non
     page_manager["active_player"].gear_up(int_gears)
     ui.label("Welcome to BattleCat's HP washing calculator (you might have to scroll down a bit)")
     ui.label("Before we begin ill need some info from you")
-    with ui.tabs().classes('w-full') as tabs:
-        tab_one = ui.tab('gears')
-        tab_two = ui.tab('class')
-    with ui.tab_panels(tabs, value=tab_one).classes('w-full'):
-        with ui.tab_panel(tab_one):
-            ui.label("please register the int gears you plan on using and then go to the class tab, clicking the GEARS button will register my (BattleCat) gears")
-            eq_category = ui.input('category')
-            eq_name = ui.input('name')
-            eq_lvl_req = ui.number('level requirement')
-            eq_INT = ui.number('INT')
+    name = ui.input("name", placeholder='')
+    INT_goal = ui.number(label='Base INT goal')
+    ui.label("class: ")
+    jobs_display = {1: "Thief" , 2: "Archer", 3: "Brawler", 4: "Gunslinger", 5: "Hero/Paladin", 6: "Spearman"}
+    job = ui.select(jobs_display)
+    mw = ui.number(label="Maple warrior %")
+    def on_click_lets_go(e):
+        if INT_goal.value and jobs[jobs_display[job.value]] and name.value and mw.value is not None:
+            page_manager["active_player"]=Player(INT_goal.value, jobs[jobs_display[job.value]], name.value, mw.value)
+            player_crud.save(session=session ,user_id=user_id, player=page_manager["active_player"])
+            print(page_manager['active_player'])
+            player_card.refresh()
+        else:
+            ui.notify("please make sure to fill all fields")
+    ui.button("let's go", on_click=on_click_lets_go) 
+    with ui.expansion('Gears registration').classes('w-full'):
+        ui.label("please register the int gears you plan on using (clicking the GEARS button will ephemerally register my gears)")
+        eq_category = ui.input('category')
+        eq_name = ui.input('name')
+        eq_lvl_req = ui.number('level requirement')
+        eq_INT = ui.number('INT')
 
-            def fun():
-                int_gears.append(Equipment("hat",'horns',22, 5))
-                int_gears.append(Equipment("hat",'zak',50, 32))
-                int_gears.append(Equipment("ear", 'ear',15, 8))
-                int_gears.append(Equipment("wand", 'wooden',10, 8))
-                int_gears.append(Equipment("overall", 'bathrobe',20, 20))
-                int_gears.append(Equipment("pendant", 'yellow muffler',30, 3))
-                int_gears.append(Equipment("pendant", 'dep star',50, 5))
-                int_gears.append(Equipment("pendant", 'htp',120, 22))
-                int_gears.append(Equipment("shield", 'pan shield',10,7))
-                int_gears.append(Equipment("eye", 'raccun',45, 11))
-                int_gears.append(Equipment("cape", 'ragged cape', 32, 9))
-                int_gears.append(Equipment("cape", 'yellow cape', 50, 12))
-                int_gears.append(Equipment("cape", 'cwkpq cape',80, 18))
-                int_gears.append(Equipment("shoe", 'slime shoe',30, 1))
-                int_gears.append(Equipment("glove", 'red markers', 20, 11))
+        def fun():
+            int_gears.append(Equipment("hat",'horns',22, 5))
+            int_gears.append(Equipment("hat",'zak',50, 32))
+            int_gears.append(Equipment("ear", 'ear',15, 8))
+            int_gears.append(Equipment("wand", 'wooden',10, 8))
+            int_gears.append(Equipment("overall", 'bathrobe',20, 20))
+            int_gears.append(Equipment("pendant", 'yellow muffler',30, 3))
+            int_gears.append(Equipment("pendant", 'dep star',50, 5))
+            int_gears.append(Equipment("pendant", 'htp',120, 22))
+            int_gears.append(Equipment("shield", 'pan shield',10,7))
+            int_gears.append(Equipment("eye", 'raccun',45, 11))
+            int_gears.append(Equipment("cape", 'ragged cape', 32, 9))
+            int_gears.append(Equipment("cape", 'yellow cape', 50, 12))
+            int_gears.append(Equipment("cape", 'cwkpq cape',80, 18))
+            int_gears.append(Equipment("shoe", 'slime shoe',30, 1))
+            int_gears.append(Equipment("glove", 'red markers', 20, 11))
+            gears_carousel.refresh()
+
+        def add_gear():
+            if eq_category.value and eq_name.value and eq_lvl_req.value and eq_INT.value:
+                new_gear = equipment_crud.create(session, request.session["id"], eq_category.value, eq_name.value, int(eq_lvl_req.value), int(eq_INT.value))
+                int_gears.append(Equipment(eq_category.value, eq_name.value, int(eq_lvl_req.value), int(eq_INT.value), new_gear.id))                    
                 gears_carousel.refresh()
+            else:
+                ui.notify("please make sure to fill all fields")
 
-            def add_gear():
-                if eq_category.value and eq_name.value and eq_lvl_req.value and eq_INT.value:
-                    new_gear = equipment_crud.create(session, request.session["id"], eq_category.value, eq_name.value, int(eq_lvl_req.value), int(eq_INT.value))
-                    int_gears.append(Equipment(eq_category.value, eq_name.value, int(eq_lvl_req.value), int(eq_INT.value), new_gear.id))                    
-                    gears_carousel.refresh()
-                else:
-                    ui.notify("please make sure to fill all fields")
-
-            ui.button("gears", on_click=fun)
-            ui.button("add gear", on_click=add_gear)
-            gears_carousel(int_gears, session)
-            
-        with ui.tab_panel(tab_two):
-            name = ui.input("name", placeholder='')
-            INT_goal = ui.number(label='Base INT goal')
-            ui.label("class: ")
-            jobs_display = {1: "Thief" , 2: "Archer", 3: "Brawler", 4: "Gunslinger", 5: "Hero/Paladin", 6: "Spearman"}
-            job = ui.select(jobs_display)
-            mw = ui.number(label="Maple warrior %")
-            def on_click_lets_go(e):
-                if INT_goal.value and jobs[jobs_display[job.value]] and name.value and mw.value is not None:
-                    page_manager["active_player"]=Player(INT_goal.value, jobs[jobs_display[job.value]], name.value, mw.value)
-                    player_crud.save(session=session ,user_id=user_id, player=page_manager["active_player"])
-                    print(page_manager['active_player'])
-                    player_card.refresh()
-                else:
-                    ui.notify("please make sure to fill all fields")
-            ui.button("let's go", on_click=on_click_lets_go)   
+        ui.button("gears", on_click=fun)
+        ui.button("add gear", on_click=add_gear)
+        gears_carousel(int_gears, session)              
+    
+    ui.separator()
+    ui.label('This feature will calculate the NX cheapest way to wash your character to your HP goal given your gears')
+    with ui.row():
+        hp_goal = ui.number('HP goal')
+        lvl_goal = ui.number('level goal')
+        def on_calculate_click():
+            base_int, washes, health, total_resets, success, fresh_ap_into_hp, total_washes = do_the_stuff(page_manager['active_player'], int_gears, int(lvl_goal.value), int(hp_goal.value))
+            da_thing_results(int(lvl_goal.value), int(hp_goal.value), base_int, washes, health, total_resets, success, fresh_ap_into_hp, total_washes)
+            da_thing_results.refresh()
+        ui.button('do the thing', on_click=on_calculate_click)
+    ui.separator()
     with ui.row():
         levels = ui.number('levels:', value=1, max=199, min=1)
         def level_up():
@@ -116,23 +122,16 @@ def calculator(request: Request, session: Session = Depends(get_session)) -> Non
             page_manager["active_player"].fix_char()
             player_card.refresh()
         ui.button('Reset INT', on_click=reset_INT)
-        with ui.dialog().classes("w-full") as dialog, ui.card().classes("w-full"):
+        with ui.dialog() as dialog, ui.card():
             gear_display(page_manager["active_player"].equipment)
             ui.button('close', on_click=dialog.close)
         def on_show_gear():
             gear_display.refresh()
             dialog.open()
         ui.button('Show equiped gear', on_click=on_show_gear)
-        ui.separator()
-        player_card(page_manager, int_gears, session, user_id)
-        ui.separator()
-        hp_goal = ui.number('HP goal')
-        lvl_goal = ui.number('level goal')
-        def on_calculate_click():
-            base_int, washes, health, total_washes, success, fresh_ap_into_hp = do_the_stuff(page_manager['active_player'], int_gears, int(lvl_goal.value), int(hp_goal.value))
-            da_thing_results(int(lvl_goal.value), int(hp_goal.value), base_int, washes, health, total_washes, success, fresh_ap_into_hp)
-            da_thing_results.refresh()
-        ui.button('do the thing', on_click=on_calculate_click)
+    player_card(page_manager, int_gears, session, user_id)
+    
+    ui.label("found a bug? contact me via discord: shaul_carvalho")
             
 
 
@@ -184,23 +183,24 @@ def player_card(page_manager: Dict[str, Player], int_gears: List[Equipment], ses
 @ui.refreshable
 def gear_display(gears: List[Equipment]):
     for gear in gears:
-        with ui.card().classes("border bg-red-100"):
-            # ui.label(f"category: {gear.category}")
+        with ui.card().classes("border bg-red-100 gap-0"):
+            ui.label(f"category: {gear.category}")
             ui.label(f"name: {gear.name}")
-            # ui.label(f"level requirement: {gear.level_req}")
+            ui.label(f"level requirement: {gear.level_req}")
             ui.label(f"INT: {gear.INT}")
 
 @ui.refreshable
-def da_thing_results(lvl, health_goal,base_int, washes, health, total_washes, is_seccesful, fresh_ap_into_hp):
+def da_thing_results(lvl, health_goal,base_int, washes, health, total_resets, is_seccesful, fresh_ap_into_hp, total_washes):
     if is_seccesful:
         color = 'bg-green-100'
     else:
         color = 'bg-red-100'
     with ui.element('div').classes(color):
-        ui.label(f'for {health_goal} HP goal at lvl {lvl} with the registered gears')
-        ui.label(f'the most optimal int is {base_int}')
-        ui.label(f'acompanied by {washes} MP washes')
-        ui.label(f'Fresh AP spent in HP {fresh_ap_into_hp}')
+        ui.label(f'For {health_goal} HP goal at lvl {lvl} with the registered gears')
+        ui.label(f'The most optimal int is: {base_int}')
+        ui.label(f'Fresh AP pent in MP: {washes}')
+        ui.label(f'Fresh AP spent in HP: {fresh_ap_into_hp}')
         ui.label(f'HP after fully washing is: {health}')
+        ui.label(f'Points reset from mana into other stats: {total_washes}')
         ui.label(f'Washing AP reset cost: {base_int - 4 + washes} (cost of resetting int back to 4 + fresh AP spent in MP)')
-        ui.label(f'Total ap reset costs (including resetting the MP to HP): {total_washes}')
+        ui.label(f'Total ap reset costs (including resetting the MP to HP): {total_resets}')
