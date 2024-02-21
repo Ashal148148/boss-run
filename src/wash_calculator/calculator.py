@@ -5,59 +5,64 @@ from src.wash_calculator.job import jobs
 
 def do_the_stuff(player: Player,int_gears: List[Equipment], level_goal: int, hp_goal: int) -> Tuple[int,int, int, int, bool]:
     player = player.copy()
-    abu_crazy = 20
-    abu_step = 10
+    base_int = 10
+    base_int_increment = 10
     success = False
     player.reset_player()
-    player.int_goal = abu_crazy
-    player.progress(level_goal - 1, False, int_gears) 
+    player.int_goal = base_int
+    player.progress(level_goal - 1, False, int_gears)
+    player.hp_wash(health_goal=hp_goal)
     while player.fresh_AP and player.health < hp_goal:
         player.mp_wash(1)
-        player.hp_wash()
-    first = player.mp_washes    
-    second = player.washes
+        player.hp_wash(health_goal=hp_goal)
+    mp_washes = player.mp_washes    
+    total_washes = player.washes
     
-    print(f"ok so the first run cost {first} mana washes, hp reached was {player.health}")
+    print(f"ok so the first run cost {mp_washes} mana washes, hp reached was {player.health}")
     player.fix_char()
-    min_total_cost = first + player.washes - second
-    min_first = first
-    min_abu_crazy = abu_crazy
+    min_total_cost = mp_washes + player.washes - total_washes
+    min_mp_washes = mp_washes
+    min_base_int = base_int
+    min_total_washes = total_washes
     max_hp = player.health
     # print(f"total cost of washes {min_total_cost}")
-    while abu_crazy < 700:
-        abu_crazy += abu_step
-        player.int_goal = abu_crazy
+    while base_int < 700:
+        base_int += base_int_increment
+        player.int_goal = base_int
         player.reset_player()
         player.progress(level_goal - 1, False, int_gears) 
+        player.hp_wash(health_goal=hp_goal)
         while player.fresh_AP and player.health < hp_goal:
             player.mp_wash(1)
-            player.hp_wash()
-        first = player.mp_washes
-        second = player.washes
+            player.hp_wash(health_goal=hp_goal)
+        mp_washes = player.mp_washes
+        total_washes = player.washes
         if player.health < hp_goal:
             pass
-            print(f"{abu_crazy}INT: i have failed HP reached was: {player.health}")
+            print(f"{base_int}INT: i have failed HP reached was: {player.health}")
         else:
             success = True
-        # print(f"ok so the {abu_crazy} INT run cost {first} mana washes, hp reached was {player.health}")
+        # print(f"ok so the {abu_crazy} INT run cost {mp_washes} mana washes, hp reached was {player.health}")
         player.fix_char()
-        total_cost = first + (player.washes - second)
-        print(f"{player.name} with {abu_crazy} INT: total cost of washes {total_cost}")
+        total_cost = mp_washes + (player.washes - total_washes)
+        print(f"{player.name} with {base_int} INT: total cost of washes {total_cost}")
         if total_cost < min_total_cost or max_hp < player.health and max_hp < hp_goal:
+            min_total_washes = total_washes
             min_total_cost = total_cost
-            min_first = first
-            min_abu_crazy = abu_crazy
+            min_mp_washes = mp_washes
+            min_base_int = base_int
             max_hp = player.health
-    player.int_goal = min_abu_crazy
+    player.int_goal = min_base_int
     player.reset_player()
     player.progress(level_goal - 1, False, int_gears)
+    player.hp_wash(health_goal=hp_goal)
     while player.fresh_AP and player.health < hp_goal:
         player.mp_wash(1)
-        player.hp_wash()
+        player.hp_wash(health_goal=hp_goal)
     player.fix_char()
     best_health = player.health
-    print(f"[{player.name}] i have found the best base int: {min_abu_crazy} and it is accompanied by {min_first} washes")
-    return min_abu_crazy, min_first, best_health, player.washes, success, player.fresh_ap_into_hp_total
+    print(f"[{player.name}] i have found the best base int: {min_base_int} and it is accompanied by {min_mp_washes} points into MP and {min_total_washes - min_mp_washes} Washes")
+    return min_base_int, min_mp_washes, best_health, player.washes, success, player.fresh_ap_into_hp_total, (min_total_washes - min_mp_washes)
 
 if __name__ == "__main__":
     int_gears: List[Equipment] = []

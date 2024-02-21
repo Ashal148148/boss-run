@@ -94,7 +94,7 @@ class Player:
 
     def add_int(self):
         if self.INT < self.int_goal:
-            if self.level >= 7 and self.level <=10:
+            if self.level >= (10 - self.job.first_job_stat_requirement / 5) and self.main_stat < self.job.first_job_stat_requirement:
                 self.main_stat += self.fresh_AP
                 self.INT += self.stale_ap
             else:
@@ -134,19 +134,23 @@ class Player:
         self.mp_washes += washes
         # print(f"at lvl {self.level} mp wash gain was: {self.bonus_mana - before}")
 
-    def hp_wash(self, max_amount=9999):
+    def hp_wash(self, max_amount=9999, health_goal=30000):
         if max_amount > self.bonus_mana / self.job.mp_cost:
             washes = int(self.bonus_mana / self.job.mp_cost)
         else:
             washes = max_amount
-        for _ in range(washes):
-            self.bonus_HP += self.job.base_hp_gain
-            if self.is_adding_fresh_ap_into_hp and self.level > self.job.hp_gain_skill_level and self.fresh_AP > 0:
-                self.fresh_AP -= 1
-                self.stale_ap += 1
-                self.bonus_HP += self.job.hp_gain_skill
-                self.fresh_ap_into_hp_total += 1
-            self.bonus_mana -= self.job.mp_cost
+        for i in range(washes):
+            if self.health < health_goal:
+                self.bonus_HP += self.job.base_hp_gain
+                if self.is_adding_fresh_ap_into_hp and self.level > self.job.hp_gain_skill_level and self.fresh_AP > 0:
+                    self.fresh_AP -= 1
+                    self.stale_ap += 1
+                    self.bonus_HP += self.job.hp_gain_skill
+                    self.fresh_ap_into_hp_total += 1
+                self.bonus_mana -= self.job.mp_cost
+            else:
+                washes = i
+                break
         self.washes += washes
 
 
