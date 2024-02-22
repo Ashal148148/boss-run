@@ -25,7 +25,6 @@ def do_the_stuff(player: Player,int_gears: List[Equipment], level_goal: int, hp_
     min_base_int = base_int
     min_total_washes = total_washes
     max_hp = player.health
-    # print(f"total cost of washes {min_total_cost}")
     while base_int < 700:
         base_int += base_int_increment
         player.int_goal = base_int
@@ -42,7 +41,6 @@ def do_the_stuff(player: Player,int_gears: List[Equipment], level_goal: int, hp_
             print(f"{base_int}INT: i have failed HP reached was: {player.health}")
         else:
             success = True
-        # print(f"ok so the {abu_crazy} INT run cost {mp_washes} mana washes, hp reached was {player.health}")
         player.fix_char()
         total_cost = mp_washes + (player.washes - total_washes)
         print(f"{player.name} with {base_int} INT: total cost of washes {total_cost}")
@@ -75,7 +73,7 @@ if __name__ == "__main__":
     int_gears.append(Equipment("pendant", 'dep star',50, 5))
     int_gears.append(Equipment("pendant", 'htp', 120, 22))
     int_gears.append(Equipment("shield", 'pan shield',10,7))
-    int_gears.append(Equipment("eye", 'raccun',45, 11))
+    int_gears.append(Equipment("eye", 'raccoon',45, 11))
     int_gears.append(Equipment("cape", 'ragged cape', 32, 9))
     int_gears.append(Equipment("cape", 'yellow cape', 50, 12))
     int_gears.append(Equipment("cape", 'cwkpq cape',80, 18))

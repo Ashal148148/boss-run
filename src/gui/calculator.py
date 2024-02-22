@@ -192,8 +192,8 @@ def gear_display(gears: List[Equipment]):
             ui.label(f"INT: {gear.INT}")
 
 @ui.refreshable
-def da_thing_results(lvl, health_goal,base_int, washes, health, total_resets, is_seccesful, fresh_ap_into_hp, total_washes):
-    if is_seccesful:
+def da_thing_results(lvl, health_goal,base_int, washes, health, total_resets, is_successful, fresh_ap_into_hp, total_washes):
+    if is_successful:
         color = 'bg-green-100'
     else:
         color = 'bg-red-100'

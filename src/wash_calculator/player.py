@@ -9,7 +9,7 @@ class Player:
     int_goal: int
     level: int
     equipment: List[Equipment]
-    maple_warrior_precent: int
+    maple_warrior_percent: int
     bonus_mana: int
     bonus_HP: int
     fresh_AP: int
@@ -30,7 +30,7 @@ class Player:
         for e in self.equipment:
             total_int += e.INT
         if self.level > 10:
-            return int(total_int * (self.maple_warrior_precent / 100 + 1))
+            return int(total_int * (self.maple_warrior_percent / 100 + 1))
         else:
             return total_int
 
@@ -47,7 +47,7 @@ class Player:
     def health(self):
         return self.bonus_HP + self.job.base_hp[self.level - 1]
     
-    def __init__(self, int_goal: int, job: Job, name: str, maple_warrior_precent: int, level: int = 1, equipment: List[Equipment] = [], bonus_HP: int = 0,
+    def __init__(self, int_goal: int, job: Job, name: str, maple_warrior_percent: int, level: int = 1, equipment: List[Equipment] = [], bonus_HP: int = 0,
                  bonus_mana: int = 0, INT: int = 10, fresh_AP: int = 0, washes: int = 0, is_adding_int: bool = True, stale_ap: int = 0,
                  main_stat: int = 5, is_adding_fresh_ap_into_hp: bool = True, mp_washes: int = 0, fresh_ap_into_hp_total: int = 0, id: int = 1) -> None:
         self.level = level
@@ -56,7 +56,7 @@ class Player:
         self.bonus_HP = bonus_HP
         self.bonus_mana = bonus_mana
         self.INT = INT
-        self.maple_warrior_precent = maple_warrior_precent
+        self.maple_warrior_percent = maple_warrior_percent
         self.fresh_AP = fresh_AP
         self.washes = washes
         self.is_adding_int = is_adding_int
@@ -115,9 +115,9 @@ class Player:
                         self.equipment.remove(g)
                         self.equipment.append(e)
                         # print(f"removing: {g}")
-                        # print(f"equiping: {e}")                 
+                        # print(f"equipping: {e}")                 
             if new:
-                # print(f"equiping: {e.name}")
+                # print(f"equipping: {e.name}")
                 self.equipment.append(e)
         
     def mp_wash(self, max_amount=9999):
@@ -173,7 +173,7 @@ class Player:
         self.INT = 4
 
     def copy(self):
-        new_guy = Player(self.int_goal, self.job, self.name, self.maple_warrior_precent)
+        new_guy = Player(self.int_goal, self.job, self.name, self.maple_warrior_percent)
         new_guy.level = self.level
         new_guy.equipment = self.equipment
         new_guy.bonus_HP = self.bonus_HP
@@ -195,7 +195,7 @@ class Player:
         "bonus_HP": self.bonus_HP ,
         "bonus_mana": self.bonus_mana ,
         "INT": self.INT ,
-        "maple_warrior_precent": self.maple_warrior_precent ,
+        "maple_warrior_percent": self.maple_warrior_percent ,
         "fresh_AP": self.fresh_AP ,
         "washes": self.washes ,
         "is_adding_int": self.is_adding_int ,
