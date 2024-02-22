@@ -5,7 +5,7 @@ from sqlalchemy import delete, insert, select, update
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import ResourceClosedError
 
-from .error import ResouceNotFoundException
+from .error import ResourceNotFoundException
 from .base import CRUDBase
 from .user import user_crud
 from ..db.player import Player
@@ -17,7 +17,7 @@ class PlayerCRUD(CRUDBase):
         try:
             r, = session.execute(select(Player).where(Player.id == id)).all()[0]
         except IndexError:
-            raise ResouceNotFoundException()
+            raise ResourceNotFoundException()
         return r
     
     def read_by_session_id(self, session: Session, session_id: UUID) -> List[Tuple[Player,]]:
@@ -29,7 +29,7 @@ class PlayerCRUD(CRUDBase):
         try:
             r, = session.execute(select(Player).where(Player.user_id == user_id)).all()[0]
         except IndexError:
-            raise ResouceNotFoundException()
+            raise ResourceNotFoundException()
         return r
     
     def create(self, session: Session, user_id: int, player: PlayerSchema):
@@ -47,7 +47,7 @@ class PlayerCRUD(CRUDBase):
     def save(self, session: Session, user_id: int, player: PlayerSchema):
         try:
             return self.update(session, user_id, player)
-        except ResouceNotFoundException:
+        except ResourceNotFoundException:
             return self.create(session, user_id, player)
     
     def delete(self, session: Session, id: PositiveInt):

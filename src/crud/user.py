@@ -3,7 +3,7 @@ from pydantic import PositiveInt
 from sqlalchemy import delete, insert, select
 from sqlalchemy.orm import Session
 from .base import CRUDBase
-from .error import ResouceNotFoundException
+from .error import ResourceNotFoundException
 from src.db import User
 
 class UserCRUD(CRUDBase):
@@ -11,7 +11,7 @@ class UserCRUD(CRUDBase):
         try:
             r, = session.execute(select(User).where(User.session_id == session_id)).all()[0]
         except IndexError:
-            raise ResouceNotFoundException()
+            raise ResourceNotFoundException()
         return r
     
     def create(self, session: Session, session_id: UUID):

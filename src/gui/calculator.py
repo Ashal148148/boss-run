@@ -4,7 +4,7 @@ from fastapi import Cookie, Request, Depends
 from nicegui import app, ui
 import nicegui
 from ..identity import accept_user
-from src.crud import equipment_crud, player_crud, ResouceNotFoundException
+from src.crud import equipment_crud, player_crud, ResourceNotFoundException
 from sqlalchemy.orm import Session
 from .dependencies import get_session
 from ..schemas import PlayerSchema
@@ -19,13 +19,13 @@ def calculator(request: Request, session: Session = Depends(get_session)) -> Non
         player = PlayerSchema.model_validate(player_crud.read_by_user_id(session, user_id), from_attributes=True).model_dump()
         player['job'] = jobs[player['job']]
         player = Player(**player)
-    except ResouceNotFoundException:
+    except ResourceNotFoundException:
         player = Player(350, jobs['Thief'], 'AshalNL', 10)
     gears_from_db = equipment_crud.read_by_session_id(session, user_id)
     page_manager: Dict[str, Player | str, List[Player]] = {'active_player': player, 'standby': []}
     int_gears: List[Equipment] = []
     for g, in gears_from_db:
-        int_gears.append(Equipment(g.catagory, g.name, g.level_requirement, g.INT, g.id))
+        int_gears.append(Equipment(g.category, g.name, g.level_requirement, g.INT, g.id))
     page_manager["active_player"].gear_up(int_gears)
     ui.label("Welcome to BattleCat's HP washing calculator (you might have to scroll down a bit)")
     ui.label("Before we begin ill need some info from you")
@@ -46,7 +46,7 @@ def calculator(request: Request, session: Session = Depends(get_session)) -> Non
                 ui.notify("please make sure to fill all fields")
         ui.button("let's go", on_click=on_click_lets_go) 
     with ui.expansion('Gears registration').classes('w-full'):
-        ui.label("please register the int gears you plan on using (clicking the GEARS button will ephemerally register my gears)")
+        ui.label("please register the int gears you plan on using (clicking the GEARS button will temporarily register my [BattleCat] gears)")
         eq_category = ui.input('category')
         eq_name = ui.input('name')
         eq_lvl_req = ui.number('level requirement')
@@ -62,7 +62,7 @@ def calculator(request: Request, session: Session = Depends(get_session)) -> Non
             int_gears.append(Equipment("pendant", 'dep star',50, 5))
             int_gears.append(Equipment("pendant", 'htp',120, 22))
             int_gears.append(Equipment("shield", 'pan shield',10,7))
-            int_gears.append(Equipment("eye", 'raccun',45, 11))
+            int_gears.append(Equipment("eye", 'raccoon',45, 11))
             int_gears.append(Equipment("cape", 'ragged cape', 32, 9))
             int_gears.append(Equipment("cape", 'yellow cape', 50, 12))
             int_gears.append(Equipment("cape", 'cwkpq cape',80, 18))
@@ -83,7 +83,7 @@ def calculator(request: Request, session: Session = Depends(get_session)) -> Non
         gears_carousel(int_gears, session)              
     
     ui.separator()
-    ui.label('This feature will calculate the NX cheapest way to wash your character to your HP goal given your gears')
+    ui.label('This feature will take into account your gears and calculate the NX cheapest way for you to reach your HP goal')
     with ui.row():
         hp_goal = ui.number('HP goal')
         lvl_goal = ui.number('level goal')
@@ -129,7 +129,7 @@ def calculator(request: Request, session: Session = Depends(get_session)) -> Non
         def on_show_gear():
             gear_display.refresh()
             dialog.open()
-        ui.button('Show equiped gear', on_click=on_show_gear)
+        ui.button('Show equipped gear', on_click=on_show_gear)
     player_card(page_manager, int_gears, session, user_id)
     
     ui.label("found a bug? contact me via discord: shaul_carvalho")
