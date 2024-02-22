@@ -29,21 +29,22 @@ def calculator(request: Request, session: Session = Depends(get_session)) -> Non
     page_manager["active_player"].gear_up(int_gears)
     ui.label("Welcome to BattleCat's HP washing calculator (you might have to scroll down a bit)")
     ui.label("Before we begin ill need some info from you")
-    name = ui.input("name", placeholder='')
-    INT_goal = ui.number(label='Base INT goal')
-    ui.label("class: ")
-    jobs_display = {1: "Thief" , 2: "Archer", 3: "Brawler", 4: "Gunslinger", 5: "Hero/Paladin", 6: "Spearman"}
-    job = ui.select(jobs_display)
-    mw = ui.number(label="Maple warrior %")
-    def on_click_lets_go(e):
-        if INT_goal.value and jobs[jobs_display[job.value]] and name.value and mw.value is not None:
-            page_manager["active_player"]=Player(INT_goal.value, jobs[jobs_display[job.value]], name.value, mw.value)
-            player_crud.save(session=session ,user_id=user_id, player=page_manager["active_player"])
-            print(page_manager['active_player'])
-            player_card.refresh()
-        else:
-            ui.notify("please make sure to fill all fields")
-    ui.button("let's go", on_click=on_click_lets_go) 
+    with ui.card():
+        name = ui.input("name", placeholder='')
+        INT_goal = ui.number(label='Base INT goal')
+        ui.label("class: ")
+        jobs_display = {1: "Thief" , 2: "Archer", 3: "Brawler", 4: "Gunslinger", 5: "Hero/Paladin", 6: "Spearman"}
+        job = ui.select(jobs_display)
+        mw = ui.number(label="Maple warrior %")
+        def on_click_lets_go(e):
+            if INT_goal.value and jobs[jobs_display[job.value]] and name.value and mw.value is not None:
+                page_manager["active_player"]=Player(INT_goal.value, jobs[jobs_display[job.value]], name.value, mw.value)
+                player_crud.save(session=session ,user_id=user_id, player=page_manager["active_player"])
+                print(page_manager['active_player'])
+                player_card.refresh()
+            else:
+                ui.notify("please make sure to fill all fields")
+        ui.button("let's go", on_click=on_click_lets_go) 
     with ui.expansion('Gears registration').classes('w-full'):
         ui.label("please register the int gears you plan on using (clicking the GEARS button will ephemerally register my gears)")
         eq_category = ui.input('category')
@@ -117,11 +118,11 @@ def calculator(request: Request, session: Session = Depends(get_session)) -> Non
         def full_hp_wash():
             page_manager["active_player"].hp_wash()
             player_card.refresh()
-        ui.button('Reset all bonus mp into hp', on_click=full_hp_wash)
+        ui.button('Reset all bonus mp into hp', on_click=full_hp_wash).classes('red')
         def reset_INT():
             page_manager["active_player"].fix_char()
             player_card.refresh()
-        ui.button('Reset INT', on_click=reset_INT)
+        ui.button('Reset INT', on_click=reset_INT).classes('red')
         with ui.dialog() as dialog, ui.card():
             gear_display(page_manager["active_player"].equipment)
             ui.button('close', on_click=dialog.close)
@@ -132,6 +133,7 @@ def calculator(request: Request, session: Session = Depends(get_session)) -> Non
     player_card(page_manager, int_gears, session, user_id)
     
     ui.label("found a bug? contact me via discord: shaul_carvalho")
+    ui.label("donations would be appreciated <todo>")
             
 
 
