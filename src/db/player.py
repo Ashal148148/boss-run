@@ -14,7 +14,7 @@ class Player(Base):
     bonus_HP = Column(Integer)
     bonus_mana = Column(Integer)
     INT = Column(Integer)
-    maple_warrior_precent = Column(Integer)
+    maple_warrior_percent = Column(Integer)
     fresh_AP = Column(Integer)
     washes = Column(Integer)
     is_adding_int = Column(Boolean)

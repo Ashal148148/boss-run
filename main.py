@@ -9,4 +9,4 @@ logger.info(os.environ)
 import src.gui
 from nicegui import ui 
 
-ui.run(reload=False, storage_secret='hi', on_air=False)
+ui.run(reload=False, storage_secret='hi', on_air=False, port=80)

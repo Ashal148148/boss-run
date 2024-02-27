@@ -16,9 +16,9 @@ class EquipmentCRUD(CRUDBase):
         r = session.execute(select(Equipment).where(Equipment.user_id == user_id)).all()
         return r
     
-    def create(self, session: Session, session_id: UUID, catagory: str, name: str, level: int, INT: int):
+    def create(self, session: Session, session_id: UUID, category: str, name: str, level: int, INT: int):
         user = user_crud.read(session=session, session_id=session_id)
-        r = Equipment(catagory=catagory, name=name, level_requirement=level, INT=INT, user_id=user.id)
+        r = Equipment(category=category, name=name, level_requirement=level, INT=INT, user_id=user.id)
         session.add(r)
         session.commit()
         return r

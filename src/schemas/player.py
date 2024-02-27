@@ -4,7 +4,7 @@ class PlayerSchema(BaseModel):
     INT: int
     int_goal: int
     level: int
-    maple_warrior_precent: int
+    maple_warrior_percent: int
     bonus_mana: int
     bonus_HP: int
     fresh_AP: int
