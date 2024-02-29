@@ -30,52 +30,52 @@ class Job:
 
 
 thief = Job(
-    "Thief",
-    12,
-    16,
-    THIEF_ARCHER_BASE_HP,
-    25
+    name="Thief",
+    mp_cost=12,
+    hp_gain=16,
+    base_hp=THIEF_ARCHER_BASE_HP,
+    first_job_stat_requirement=25
 )
 archer = Job(
-    "Archer",
-    12,
-    16,
-    THIEF_ARCHER_BASE_HP,
-    25
+    name="Archer",
+    mp_cost=12,
+    hp_gain=16,
+    base_hp=THIEF_ARCHER_BASE_HP,
+    first_job_stat_requirement=25
 )
 dk = Job(
-    "Spearman",
-    4,
-    50,
-    DK_BASE_HP,
-    35,
-    30,
-    14
+    name="Spearman",
+    mp_cost=4,
+    hp_gain=50,
+    base_hp=DK_BASE_HP,
+    first_job_stat_requirement=35,
+    hp_gain_skill=30,
+    hp_gain_skill_level=14
 )
 hero_pala = Job(
-    "Hero/Paladin",
-    4,
-    50,
-    HERO_PAGE_BASE_HP,
-    35,
-    30,
-    14
+    name="Hero/Paladin",
+    mp_cost=4,
+    hp_gain=50,
+    base_hp=HERO_PAGE_BASE_HP,
+    first_job_stat_requirement=35,
+    hp_gain_skill=30,
+    hp_gain_skill_level=14
 )
 bucc = Job(
-    "Brawler",
-    16,
-    18,
-    BUCC_BASE_HP,
-    20,
-    20,
-    34
+    name="Brawler",
+    mp_cost=16,
+    hp_gain=18,
+    base_hp=BUCC_BASE_HP,
+    first_job_stat_requirement=20,
+    hp_gain_skill=20,
+    hp_gain_skill_level=34
 )
 sair = Job(
-    "Gunslinger",
-    16,
-    18,
-    SAIR_BASE_HP,
-    20
+    name="Gunslinger",
+    mp_cost=16,
+    hp_gain=18,
+    base_hp=SAIR_BASE_HP,
+    first_job_stat_requirement=20
 )
 
 jobs = {"Thief": thief , "Archer": archer, "Brawler": bucc, "Gunslinger": sair, "Hero/Paladin": hero_pala, "Spearman":dk}
