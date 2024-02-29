@@ -29,22 +29,25 @@ def calculator(request: Request, session: Session = Depends(get_session)) -> Non
     page_manager["active_player"].gear_up(int_gears)
     ui.label("Welcome to BattleCat's HP washing calculator (you might have to scroll down a bit)")
     ui.label("Before we begin ill need some info from you")
-    with ui.card():
-        name = ui.input("name", placeholder='')
-        INT_goal = ui.number(label='Base INT goal')
-        ui.label("class: ")
-        jobs_display = {1: "Thief" , 2: "Archer", 3: "Brawler", 4: "Gunslinger", 5: "Hero/Paladin", 6: "Spearman"}
-        job = ui.select(jobs_display)
-        mw = ui.number(label="Maple warrior %")
-        def on_click_lets_go(e):
-            if INT_goal.value and jobs[jobs_display[job.value]] and name.value and mw.value is not None:
-                page_manager["active_player"]=Player(INT_goal.value, jobs[jobs_display[job.value]], name.value, mw.value)
-                player_crud.save(session=session ,user_id=user_id, player=page_manager["active_player"])
-                print(page_manager['active_player'])
-                player_card.refresh()
-            else:
-                ui.notify("please make sure to fill all fields")
-        ui.button("let's go", on_click=on_click_lets_go) 
+    with ui.row():
+        with ui.column():
+            with ui.card():
+                name = ui.input("name", placeholder='')
+                INT_goal = ui.number(label='Base INT goal')
+                ui.label("class: ")
+                jobs_display = {1: "Thief" , 2: "Archer", 3: "Brawler", 4: "Gunslinger", 5: "Hero/Paladin", 6: "Spearman"}
+                job = ui.select(jobs_display)
+                mw = ui.number(label="Maple warrior %")
+                def on_click_lets_go(e):
+                    if INT_goal.value and jobs[jobs_display[job.value]] and name.value and mw.value is not None:
+                        page_manager["active_player"]=Player(INT_goal.value, jobs[jobs_display[job.value]], name.value, mw.value)
+                        player_crud.save(session=session ,user_id=user_id, player=page_manager["active_player"])
+                        print(page_manager['active_player'])
+                        player_card.refresh()
+                    else:
+                        ui.notify("please make sure to fill all fields")
+                ui.button("let's go", on_click=on_click_lets_go) 
+        player_card(page_manager, int_gears, session, user_id)
     with ui.expansion('Gears registration').classes('w-full'):
         ui.label("please register the int gears you plan on using (clicking the GEARS button will temporarily register my [BattleCat] gears)")
         eq_category = ui.input('category')
@@ -130,7 +133,6 @@ def calculator(request: Request, session: Session = Depends(get_session)) -> Non
             gear_display.refresh()
             dialog.open()
         ui.button('Show equipped gear', on_click=on_show_gear)
-    player_card(page_manager, int_gears, session, user_id)
     
     ui.label("found a bug? contact me via discord: shaul_carvalho")
     ui.label("donations would be appreciated <todo>")
