@@ -25,10 +25,15 @@ class Player:
     id: int
 
     @property
-    def total_int(self):
-        total_int = self.INT
+    def gears_int(self):
+        total_int = 0
         for e in self.equipment:
             total_int += e.INT
+        return total_int
+
+    @property
+    def total_int(self):
+        total_int = self.INT + self.gears_int
         if self.level > 10:
             return int(total_int * (self.maple_warrior_percent / 100 + 1))
         else:
@@ -40,14 +45,14 @@ class Player:
     
     @property
     def bonus_mana_from_ap(self):
-        return int(self.INT / 10)
+        return int(self.INT / 10) - 2
             
 
     @property
     def health(self):
         return self.bonus_HP + self.job.base_hp[self.level - 1]
     
-    def __init__(self, int_goal: int, job: Job, name: str, maple_warrior_percent: int, level: int = 1, equipment: List[Equipment] = [], bonus_HP: int = 0,
+    def __init__(self, job: Job, name: str, maple_warrior_percent: int,int_goal: int = 10, level: int = 1, equipment: List[Equipment] = [], bonus_HP: int = 0,
                  bonus_mana: int = 0, INT: int = 10, fresh_AP: int = 0, washes: int = 0, is_adding_int: bool = True, stale_ap: int = 0,
                  main_stat: int = 5, is_adding_fresh_ap_into_hp: bool = True, mp_washes: int = 0, fresh_ap_into_hp_total: int = 0, id: int = 1) -> None:
         self.level = level
@@ -96,7 +101,7 @@ class Player:
         if self.INT < self.int_goal:
             if self.level >= (10 - self.job.first_job_stat_requirement / 5) and self.main_stat < self.job.first_job_stat_requirement:
                 self.main_stat += self.fresh_AP
-                self.INT += self.stale_ap
+                self.INT += self.stale_ap  # there should be no stale int at lvl 7...
             else:
                 self.INT += self.fresh_AP
                 self.INT += self.stale_ap
@@ -173,7 +178,8 @@ class Player:
         self.INT = 4
 
     def copy(self):
-        new_guy = Player(self.int_goal, self.job, self.name, self.maple_warrior_percent)
+        new_guy = Player(self.job, self.name, self.maple_warrior_percent)
+        new_guy.int_goal = self.int_goal
         new_guy.level = self.level
         new_guy.equipment = self.equipment
         new_guy.bonus_HP = self.bonus_HP
