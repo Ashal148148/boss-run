@@ -3,7 +3,7 @@ from src.wash_calculator.player import Player
 from src.wash_calculator.equipment import Equipment
 from src.wash_calculator.job import jobs
 
-def do_the_stuff(player: Player,int_gears: List[Equipment], level_goal: int, hp_goal: int) -> Tuple[int,int, int, int, bool]:
+def do_the_stuff(player: Player, int_gears: List[Equipment], level_goal: int, hp_goal: int) -> Tuple[int,int, int, int, bool]:
     player = player.copy()
     base_int = 10
     base_int_increment = 10
