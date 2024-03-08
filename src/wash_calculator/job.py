@@ -29,15 +29,8 @@ class Job:
         return f"<Job(name={self.name}, mp_cost={self.mp_cost}, base_hp_gain={self.base_hp_gain}, hp_gain_skill={self.hp_gain_skill}, hp_gain_skill_level={self.hp_gain_skill_level})>"
 
 
-thief = Job(
-    name="Thief",
-    mp_cost=12,
-    hp_gain=16,
-    base_hp=THIEF_ARCHER_BASE_HP,
-    first_job_stat_requirement=25
-)
-archer = Job(
-    name="Archer",
+archer_thief = Job(
+    name="Archer/Thief",
     mp_cost=12,
     hp_gain=16,
     base_hp=THIEF_ARCHER_BASE_HP,
@@ -46,7 +39,7 @@ archer = Job(
 dk = Job(
     name="Spearman",
     mp_cost=4,
-    hp_gain=50,
+    hp_gain=20,
     base_hp=DK_BASE_HP,
     first_job_stat_requirement=35,
     hp_gain_skill=30,
@@ -55,7 +48,7 @@ dk = Job(
 hero_pala = Job(
     name="Hero/Paladin",
     mp_cost=4,
-    hp_gain=50,
+    hp_gain=20,
     base_hp=HERO_PAGE_BASE_HP,
     first_job_stat_requirement=35,
     hp_gain_skill=30,
