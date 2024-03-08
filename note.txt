@@ -1,0 +1,13 @@
+add mp washing vs hp washing
+stale wash -> stale hp washing
+use only MP instead of sometimes MP sometimes mana
+
+re word the goal of hp washing (as much mana as necesary, warrior/buc dont stale wash)
+
+third stat for shad
+
+add some notification that shows "lets go" worked
+
+make the name on the card and registration the same
+
+add the option to start early mana washing to save leech meso
