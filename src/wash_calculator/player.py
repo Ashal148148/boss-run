@@ -94,6 +94,8 @@ class Player:
         self.bonus_mana += self.bonus_mana_on_lvl_up
         self.level += 1
         self.fresh_AP += 5
+        if self.level == 70:
+            self.fresh_AP += 5
         # print(f"lvled up to {self.level}")
         self.gear_up(int_gears)
 
