@@ -23,7 +23,7 @@ def calculator(request: Request, session: Session = Depends(get_session)) -> Non
         player['job'] = jobs[player['job']]
         player = Player(**player)
     except ResourceNotFoundException:
-        player = Player(jobs['Thief'], 'AshalNL', 10, int_goal=350)
+        player = Player(jobs['Thief/Archer'], 'AshalNL', 10, int_goal=350)
     gears_from_db = equipment_crud.read_by_session_id(session, user_id)
     page_manager: Dict[str, Player | str, List[Player]] = {'active_player': player, 'standby': []}
     int_gears: List[Equipment] = []
@@ -41,7 +41,7 @@ def calculator(request: Request, session: Session = Depends(get_session)) -> Non
         with ui.row():
             name = ui.input("name", placeholder='')
             ui.label("class: ").classes("text-lg")
-            jobs_display = {1: "Thief" , 2: "Archer", 3: "Brawler", 4: "Gunslinger", 5: "Hero/Paladin", 6: "Spearman"}
+            jobs_display = {1: "Thief/Archer" , 2: "Mage", 3: "Brawler", 4: "Gunslinger", 5: "Hero", 6: "Spearman/Paladin"}
             job = ui.select(jobs_display)
             ui.label("Maple warrior %")
             mw = ui.select({5:5, 10:10, 15:15})
@@ -117,16 +117,16 @@ def calculator(request: Request, session: Session = Depends(get_session)) -> Non
                         ui.label('Levels').classes('text-lg font-medium')
                         with ui.row():
                             def one_level_up():
-                                page_manager["active_player"].progress(1, False, int_gears)
+                                page_manager["active_player"].progress(1, int_gears)
                                 player_card.refresh()
                             ui.button("1 Up", on_click=one_level_up)
                             def ten_level_up():
-                                page_manager["active_player"].progress(10, False, int_gears)
+                                page_manager["active_player"].progress(10, int_gears)
                                 player_card.refresh()
                             ui.button("10 Up", on_click=ten_level_up)
                             levels = ui.number('levels:', value=1, max=199, min=1)
                             def custom_level_up():
-                                page_manager["active_player"].progress(int(levels.value), False, int_gears)
+                                page_manager["active_player"].progress(int(levels.value), int_gears)
                                 player_card.refresh()
                             ui.button("Level Up", on_click=custom_level_up)
                 with ui.row():
@@ -217,6 +217,7 @@ def player_card(page_manager: Dict[str, Player], int_gears: List[Equipment], ses
         ui.label(f"Gears bonus INT: {page_manager['active_player'].gears_int}").on('click',handler=on_show_gear).classes('text-blue cursor-pointer').tooltip('Click to view equipped gear')
         ui.label(f"Total INT: {page_manager['active_player'].total_int}")        
         ui.label(f"Bonus mana: {page_manager['active_player'].bonus_mana}")
+        ui.label(f"Total mana: {page_manager['active_player'].mana}")
         ui.label(f"Bonus health: {page_manager['active_player'].bonus_HP}")
         ui.label(f"Total health: {page_manager['active_player'].health}")
         ui.label(f"Fresh AP: {page_manager['active_player'].fresh_AP}")
@@ -275,3 +276,7 @@ def strategy_card(page_manager: Dict[str, Player]):
                     page_manager["active_player"].is_adding_fresh_ap_into_hp = not page_manager["active_player"].is_adding_fresh_ap_into_hp
                     player_card.refresh()
                 ui.checkbox('Add fresh AP into HP', value=page_manager["active_player"].is_adding_fresh_ap_into_hp, on_change=on_toggle_fresh_ap_into_hp).tooltip('If your class has an HP growth skill (warriors/brawlers) HP washing while this box is checked box will make your character spend fresh AP on HP, turning the fresh AP into stale AP')
+                def on_toggle_mp_wash_before_int():
+                    page_manager["active_player"].is_mp_wash_before_int = not page_manager["active_player"].is_mp_wash_before_int
+                    player_card.refresh()
+                ui.checkbox('MP Wash before adding int', value=page_manager["active_player"].is_mp_wash_before_int, on_change=on_toggle_mp_wash_before_int).tooltip('Each level put all fresh AP into MP')

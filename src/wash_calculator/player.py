@@ -17,6 +17,7 @@ class Player:
     mp_washes: int
     is_adding_int: bool
     is_adding_fresh_ap_into_hp: bool
+    is_mp_wash_before_int: bool
     stale_ap: int
     name: str
     job: Job
@@ -52,9 +53,14 @@ class Player:
     def health(self):
         return self.bonus_HP + self.job.base_hp[self.level - 1]
     
+    @property
+    def mana(self):
+        return self.bonus_mana + self.job.base_mp(self.level)
+    
     def __init__(self, job: Job, name: str, maple_warrior_percent: int,int_goal: int = 10, level: int = 1, equipment: List[Equipment] = [], bonus_HP: int = 0,
                  bonus_mana: int = 0, INT: int = 10, fresh_AP: int = 0, washes: int = 0, is_adding_int: bool = True, stale_ap: int = 0,
-                 main_stat: int = 5, is_adding_fresh_ap_into_hp: bool = True, mp_washes: int = 0, fresh_ap_into_hp_total: int = 0, id: int = 1) -> None:
+                 main_stat: int = 5, is_adding_fresh_ap_into_hp: bool = True, mp_washes: int = 0, fresh_ap_into_hp_total: int = 0, id: int = 1,
+                 is_mp_wash_before_int: bool = False) -> None:
         self.level = level
         self.int_goal = int_goal
         self.equipment = equipment
@@ -73,6 +79,7 @@ class Player:
         self.mp_washes = mp_washes
         self.fresh_ap_into_hp_total = fresh_ap_into_hp_total
         self.id = id
+        self.is_mp_wash_before_int = is_mp_wash_before_int
 
     def reset_player(self) -> None:
         self.level = 1
@@ -88,16 +95,18 @@ class Player:
         self.mp_washes = 0
         self.is_adding_fresh_ap_into_hp = True
         self.fresh_ap_into_hp_total = 0
+        self.is_mp_wash_before_int = False
 
 
     def level_up(self, int_gears: List[Equipment]):
-        self.bonus_mana += self.bonus_mana_on_lvl_up
-        self.level += 1
-        self.fresh_AP += 5
-        if self.level == 70:
+        if self.level < 200:
+            self.bonus_mana += self.bonus_mana_on_lvl_up
+            self.level += 1
             self.fresh_AP += 5
-        # print(f"lvled up to {self.level}")
-        self.gear_up(int_gears)
+            if self.level == 70:
+                self.fresh_AP += 5
+            # print(f"lvled up to {self.level}")
+            self.gear_up(int_gears)
 
     def add_int(self):
         if self.INT < self.int_goal:
@@ -161,18 +170,18 @@ class Player:
         self.washes += washes
 
 
-    def progress(self, lvls: int, mana_wash: bool, int_gears: List[Equipment]):
-        for _ in range(lvls):
+    def progress(self, levels: int, int_gears: List[Equipment]):
+        for _ in range(levels):
             self.level_up(int_gears)
-            if self.is_adding_int and mana_wash:
+            if self.is_adding_int and self.is_mp_wash_before_int:
                 self.mp_wash()
                 self.add_int()
                 continue
             if self.is_adding_int:
                 self.add_int()
-            if mana_wash:
+            if self.is_mp_wash_before_int:
                 self.mp_wash()
-            
+                        
 
     def fix_char(self):
         self.is_adding_int = False

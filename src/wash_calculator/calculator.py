@@ -10,7 +10,7 @@ def do_the_stuff(player: Player, int_gears: List[Equipment], level_goal: int, hp
     success = False
     player.reset_player()
     player.int_goal = base_int
-    player.progress(level_goal - 1, False, int_gears)
+    player.progress(level_goal - 1, int_gears)
     player.hp_wash(health_goal=hp_goal)
     while player.fresh_AP and player.health < hp_goal:
         player.mp_wash(1)
@@ -29,7 +29,7 @@ def do_the_stuff(player: Player, int_gears: List[Equipment], level_goal: int, hp
         base_int += base_int_increment
         player.int_goal = base_int
         player.reset_player()
-        player.progress(level_goal - 1, False, int_gears) 
+        player.progress(level_goal - 1, int_gears) 
         player.hp_wash(health_goal=hp_goal)
         while player.fresh_AP and player.health < hp_goal:
             player.mp_wash(1)
@@ -52,7 +52,7 @@ def do_the_stuff(player: Player, int_gears: List[Equipment], level_goal: int, hp
             max_hp = player.health
     player.int_goal = min_base_int
     player.reset_player()
-    player.progress(level_goal - 1, False, int_gears)
+    player.progress(level_goal - 1, int_gears)
     player.hp_wash(health_goal=hp_goal)
     while player.fresh_AP and player.health < hp_goal:
         player.mp_wash(1)
@@ -61,6 +61,46 @@ def do_the_stuff(player: Player, int_gears: List[Equipment], level_goal: int, hp
     best_health = player.health
     print(f"[{player.name}] i have found the best base int: {min_base_int} and it is accompanied by {min_mp_washes} points into MP and {min_total_washes - min_mp_washes} Washes")
     return min_base_int, min_mp_washes, best_health, player.washes, success, player.fresh_ap_into_hp_total, (min_total_washes - min_mp_washes)
+
+# TODO mage HP wash
+def mage_mp_wash_planner(player: Player, int_gears: List[Equipment], level_goal: int, mp_goal: int):
+    start_level = 20
+    level_increment = 1
+    player = player.copy()
+    success = False
+    player.reset_player()
+    player.int_goal = 1100
+    player.progress(start_level, int_gears)
+    player.is_mp_wash_before_int = True
+    while player.level < level_goal:
+        if player.level < start_level:
+            player.is_mp_wash_before_int = True
+        player.progress(1, int_gears)        
+        if player.mana >= mp_goal:
+            success = True
+            player.is_mp_wash_before_int = False
+    ideal_mp_washes = player.mp_washes
+    ideal_start_level = start_level
+    ideal_total_mana = player.mana
+    while start_level < level_goal:
+        sub_success = False
+        player.reset_player()
+        player.progress(start_level, int_gears)
+        player.is_mp_wash_before_int = True
+        while player.level < level_goal:
+            player.progress(1, int_gears)        
+            if player.mana >= mp_goal:
+                success = True
+                sub_success = True
+                player.is_mp_wash_before_int = False
+        if sub_success:
+            ideal_mp_washes = player.mp_washes
+            ideal_start_level = start_level
+            ideal_total_mana = player.mana
+        print(f'[{player.name}] starting at lvl {start_level} has {sub_success} washes: {player.mp_washes} total mana: {player.mana}') 
+        start_level += level_increment
+    print(f'[{player.name}] final results are {success} starting level: {ideal_start_level} washes: {ideal_mp_washes} total mana: {ideal_total_mana}')
+
 
 if __name__ == "__main__":
     int_gears: List[Equipment] = []
@@ -79,5 +119,7 @@ if __name__ == "__main__":
     int_gears.append(Equipment("cape", 'cwkpq cape',80, 18))
     int_gears.append(Equipment("shoe", 'slime shoe',30, 1))
     int_gears.append(Equipment("glove", 'red markers', 20, 11))
-    player = Player(350, jobs['Thief'], 'AshalNL', 10)
-    do_the_stuff(player, int_gears, 155, 27885)
+    # player = Player(jobs['Archer/Thief'], 'AshalNL', 10)
+    # do_the_stuff(player, int_gears, 155, 27885)
+    player = Player(jobs['Mage'], 'Higashi', 10)
+    mage_mp_wash_planner(player, int_gears, 180, 42000)
