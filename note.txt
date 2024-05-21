@@ -2,12 +2,14 @@ Done | add mp washing vs hp washing
 Done |stale wash -> stale hp washing
 Done | use only MP instead of sometimes MP sometimes mana 
 
-todo |re word the goal of hp washing (as much mana as necesary, warrior/buc dont stale wash)
+Done |re word the goal of hp washing (as much mana as necesary, warrior/buc dont stale wash)
 
 Done |third stat for shad
 
-todo |add some notification that shows "lets go" worked
+Done |add some notification that shows "lets go" worked
 
 todo |make the name on the card and registration the same
 
 todo |add the option to start early mana washing to save leech meso
+
+todo |make the "blue card editable"

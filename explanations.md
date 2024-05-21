@@ -16,7 +16,7 @@
 
 #### The principles of HP washing:
 
- - The goal of HP washing is to get as much bonus MP as possible and then stale wash to infinity.
+ - The goal of HP washing is to get as much bonus MP as necessary and then wash to reach the desired HP.
  - Using fresh AP on HP will cause the stat in raise by a random amount, for example if an archer adds a point to HP they get 16~20 HP randomly
  - Using a stale AP on HP, for example -MP -> +HP, will always yield the lowest number so 16 for archers
  - As an archer using fresh AP on MP will yield MP equal to 10 + 10% of your base INT which means that it yields [(10% of your base INT) - 2] bonus MP, this 2 MP penalty is the same for all classes, for example with 300 base INT every fresh AP in MP yields 28 bonus MP.
