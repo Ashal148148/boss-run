@@ -9,7 +9,7 @@ from src.crud import equipment_crud, player_crud, ResourceNotFoundException
 from sqlalchemy.orm import Session
 from .dependencies import get_session
 from ..schemas import PlayerSchema
-from ..wash_calculator import Player, jobs, Equipment, do_the_stuff
+from ..wash_calculator import Player, jobs, Equipment, do_the_stuff, mage_mp_wash_planner, mage_hp_wash_planner, battlecat_gears, reach_the_goal_no_matter_what
 
 print('loading calculator for the first time')
 with open('explanations.md', 'r') as f:
@@ -23,7 +23,7 @@ def calculator(request: Request, session: Session = Depends(get_session)) -> Non
         player['job'] = jobs[player['job']]
         player = Player(**player)
     except ResourceNotFoundException:
-        player = Player(jobs['Thief/Archer'], 'AshalNL', 10, int_goal=350)
+        player = Player(jobs['Archer/Thief'], 'AshalNL', 10, int_goal=350)
     gears_from_db = equipment_crud.read_by_session_id(session, user_id)
     page_manager: Dict[str, Player | str, List[Player]] = {'active_player': player, 'standby': []}
     int_gears: List[Equipment] = []
@@ -41,70 +41,26 @@ def calculator(request: Request, session: Session = Depends(get_session)) -> Non
         with ui.row():
             name = ui.input("name", placeholder='')
             ui.label("class: ").classes("text-lg")
-            jobs_display = {1: "Thief/Archer" , 2: "Mage", 3: "Brawler", 4: "Gunslinger", 5: "Hero", 6: "Spearman/Paladin"}
+            jobs_display = {1: "Archer/Thief" , 2: "Mage", 3: "Brawler", 4: "Gunslinger", 5: "Hero", 6: "Spearman/Paladin"}
             job = ui.select(jobs_display)
             ui.label("Maple warrior %")
             mw = ui.select({5:5, 10:10, 15:15})
             def on_click_lets_go(e):
-                if jobs[jobs_display[job.value]] and name.value and mw.value is not None:
+                if name.value and mw.value is not None and jobs[jobs_display[job.value]]:
                     page_manager["active_player"]=Player(jobs[jobs_display[job.value]], name.value, mw.value)
                     player_crud.save(session=session ,user_id=user_id, player=page_manager["active_player"])
                     print(page_manager['active_player'])
                     player_card.refresh()
                     strategy_card.refresh()
+                    wash_planner_card.refresh()
+                    ui.notify("successfully registered")
                 else:
                     ui.notify("please make sure to fill all fields")
             ui.button("let's go", on_click=on_click_lets_go) 
-        with ui.expansion('Gears registration'):
-            ui.label("please register the int gears you plan on using")
-            eq_category = ui.input('category')
-            eq_name = ui.input('name')
-            eq_lvl_req = ui.number('level requirement')
-            eq_INT = ui.number('INT')
-
-            def fun():
-                int_gears.append(Equipment("hat",'horns',22, 5))
-                int_gears.append(Equipment("hat",'zak',50, 32))
-                int_gears.append(Equipment("ear", 'ear',15, 8))
-                int_gears.append(Equipment("wand", 'wooden',10, 8))
-                int_gears.append(Equipment("overall", 'bathrobe',20, 20))
-                int_gears.append(Equipment("pendant", 'yellow muffler',30, 3))
-                int_gears.append(Equipment("pendant", 'dep star',50, 5))
-                int_gears.append(Equipment("pendant", 'htp',120, 22))
-                int_gears.append(Equipment("shield", 'pan shield',10,7))
-                int_gears.append(Equipment("eye", 'raccoon',45, 11))
-                int_gears.append(Equipment("cape", 'ragged cape', 32, 9))
-                int_gears.append(Equipment("cape", 'yellow cape', 50, 12))
-                int_gears.append(Equipment("cape", 'cwkpq cape',80, 18))
-                int_gears.append(Equipment("shoe", 'slime shoe',30, 1))
-                int_gears.append(Equipment("glove", 'red markers', 20, 11))
-                gears_carousel.refresh()
-
-            def add_gear():
-                if eq_category.value and eq_name.value and eq_lvl_req.value and eq_INT.value:
-                    new_gear = equipment_crud.create(session, request.session["id"], eq_category.value, eq_name.value, int(eq_lvl_req.value), int(eq_INT.value))
-                    int_gears.append(Equipment(eq_category.value, eq_name.value, int(eq_lvl_req.value), int(eq_INT.value), new_gear.id))                    
-                    gears_carousel.refresh()
-                else:
-                    ui.notify("please make sure to fill all fields")
-
-            ui.button("gears", on_click=fun).tooltip('this button will add all my (BattleCats) gears until you refresh the page')
-            ui.button("add gear", on_click=add_gear)
-            gears_carousel(int_gears, session)
+        gears_carousel(int_gears, session)
+        gears_registration(int_gears, session, request)
     
-    with ui.card().classes('w-full'):
-        ui.label('HP wash planner').classes('text-lg font-medium')
-        ui.label('This feature will use the class, gears and Maple Warrior % you entered and calculate the cheapest way to reach your HP goal by your lvl goal')
-        ui.label('The result will tell you what Base INT you should use and how many points to MP wash, how many points to add to HP and how much everything will cost')
-        ui.label('The calculation will take into account resetting your base INT to 4 once you hit your lvl goal')
-        with ui.row():
-            hp_goal = ui.number('HP goal')
-            lvl_goal = ui.number('level goal')
-            def on_calculate_click():
-                base_int, washes, health, total_resets, success, fresh_ap_into_hp, total_washes = do_the_stuff(page_manager['active_player'], int_gears, int(lvl_goal.value), int(hp_goal.value))
-                da_thing_results(int(lvl_goal.value), int(hp_goal.value), base_int, washes, health, total_resets, success, fresh_ap_into_hp, total_washes)
-                da_thing_results.refresh()
-            ui.button('do the thing', on_click=on_calculate_click)
+    wash_planner_card(page_manager, int_gears)
     
     with ui.card().classes('w-full'):
         ui.label('The calculator').classes('text-lg font-medium')
@@ -172,23 +128,102 @@ def calculator(request: Request, session: Session = Depends(get_session)) -> Non
                             ui.button('Reset INT', on_click=reset_INT).classes('red')
 
     ui.label("found a bug? contact me via discord: shaul_carvalho")
-    ui.label("donations would be appreciated <todo>")
+    # ui.label("donations would be appreciated <todo>")
             
+
+@ui.refreshable
+def wash_planner_card(page_manager: Dict[str, Player], int_gears: List[Equipment]):
+    with ui.card().classes('w-full'):
+        ui.label('HP wash planner').classes('text-lg font-medium')
+        ui.label('This feature will use the class, gears and Maple Warrior % you entered and calculate the cheapest way to reach your HP goal by your lvl goal')
+        if page_manager['active_player'].job.name != 'Mage':
+            ui.label('The result will tell you what Base INT you should use and how many points to MP wash, how many points to add to HP and how much everything will cost')
+            ui.label('The calculation will take into account resetting your base INT to 4 once you hit your lvl goal')
+            ui.label('NX focused wash')
+            with ui.row():
+                hp_goal = ui.number('HP goal')
+                lvl_goal = ui.number('level goal')
+                def on_calculate_click():
+                    base_int, washes, health, total_resets, success, fresh_ap_into_hp, total_washes = do_the_stuff(page_manager['active_player'], int_gears, int(lvl_goal.value), int(hp_goal.value))
+                    da_thing_results(int(lvl_goal.value), int(hp_goal.value), base_int, washes, health, total_resets, success, fresh_ap_into_hp, total_washes)
+                    da_thing_results.refresh()
+                ui.button('do the thing', on_click=on_calculate_click)
+            ui.label('Level focused wash')
+            with ui.row():
+                hp_goal2 = ui.number('HP goal')
+                lvl_goal2 = ui.number('level goal')
+                def on_calculate_hp_wash_click():
+                    base_int, washes, health, total_resets, success, fresh_ap_into_hp, total_washes, mp_wash_starting_int = reach_the_goal_no_matter_what(page_manager['active_player'], int_gears, int(lvl_goal2.value), int(hp_goal2.value))
+                    da_thing_results(int(lvl_goal2.value), int(hp_goal2.value), base_int, washes, health, total_resets, success, fresh_ap_into_hp, total_washes, mp_wash_starting_int)
+                    da_thing_results.refresh()
+                ui.button('do the thing', on_click=on_calculate_hp_wash_click)
+        else:
+            ui.label('Mage MP wash planner')
+            with ui.row():
+                mp_goal = ui.number('MP goal')
+                mage_mp_lvl_goal = ui.number('level goal')
+                def on_calculate_mp_click():
+                    start_level, total_washes, total_mp, is_successful = mage_mp_wash_planner(page_manager['active_player'], int_gears, int(mage_mp_lvl_goal.value), int(mp_goal.value))
+                    mage_wash_planner_results(start_level, total_washes, 0, total_mp, is_successful)
+                    # mage_wash_planner_results.refresh()
+                ui.button('do the thing', on_click=on_calculate_mp_click)
+            ui.label('Mage HP wash planner')
+            with ui.row():
+                mage_hp_goal = ui.number('HP goal')
+                mage_mp_goal = ui.number('MP goal')
+                mage_hp_lvl_goal = ui.number('level goal')
+                def on_calculate_mage_hp_click():
+                    start_level, total_washes, total_hp, total_mp, is_successful = mage_hp_wash_planner(page_manager['active_player'], int_gears, int(mage_hp_lvl_goal.value), int(mage_hp_goal.value), int(mage_mp_goal.value))
+                    mage_wash_planner_results(start_level, total_washes, total_hp, total_mp, is_successful)
+                    # mage_wash_planner_results.refresh()
+                ui.button('do the thing', on_click=on_calculate_mage_hp_click)
+
+
+@ui.refreshable
+def gears_registration(int_gears: List[Equipment], session: Session, request: Request):
+    with ui.expansion('Gears registration').classes('bg-blue-300' if len(int_gears) > 0 else 'bg-red-300'):
+        ui.label("please register the int gears you plan on using")
+        eq_category = ui.select(options=Equipment.categories, with_input=True).classes('w-40')
+        eq_name = ui.input('name')
+        eq_lvl_req = ui.number('level requirement')
+        eq_INT = ui.number('INT')        
+
+        def add_gear():
+            if eq_category.value and eq_name.value and eq_lvl_req.value and eq_INT.value:
+                new_gear = equipment_crud.create(session, request.session["id"], eq_category.value, eq_name.value, int(eq_lvl_req.value), int(eq_INT.value))
+                int_gears.append(Equipment(eq_category.value, eq_name.value, int(eq_lvl_req.value), int(eq_INT.value), new_gear.id))                    
+                if len(int_gears) == 1:  # the fist gear was added so we change color
+                    gears_registration.refresh()
+                gears_carousel.refresh()
+                ui.notify("gear added")
+            else:
+                ui.notify("please make sure to fill all fields")
+
+        def battlecat_gears_and_refresh():
+            battlecat_gears(int_gears)
+            gears_registration.refresh()
+            gears_carousel.refresh() 
+
+        ui.button("gears", on_click=battlecat_gears_and_refresh).tooltip('this button will add all my (BattleCats) gears until you refresh the page')
+        ui.button("add gear", on_click=add_gear) 
 
 
 @ui.refreshable
 def gears_carousel(int_gears: List[Equipment], session: Session):
     gear_tabs = []
     with ui.tabs().classes('w-half') as tabs:
-        for gear in int_gears:
+        for gear in reversed(int_gears):  # reverse so that the latest addition appears first
             gear_tabs.append(ui.tab(gear.name))
     if gear_tabs:
         with ui.tab_panels(tabs, value=gear_tabs[0]):
-            for t, gear in zip(gear_tabs, int_gears):             
+            for t, gear in zip(gear_tabs, reversed(int_gears)):             
                 def on_click_remove(int_gearz, gearz):
                     int_gearz.remove(gearz)
                     equipment_crud.delete(session, gearz.id)
+                    if len(int_gearz) == 0:  # we removed the last gear so change color
+                        gears_registration.refresh()
                     gears_carousel.refresh()
+                    ui.notify("gear removed")                    
                 p = partial(on_click_remove, int_gears, gear)
                 with ui.tab_panel(t):
                     ui.label(f"category: {gear.category}")
@@ -244,7 +279,7 @@ def gear_display(gears: List[Equipment]):
             ui.label(f"INT: {gear.INT}")
 
 @ui.refreshable
-def da_thing_results(lvl, health_goal,base_int, washes, health, total_resets, is_successful, fresh_ap_into_hp, total_washes):
+def da_thing_results(lvl, health_goal,base_int, washes, health, total_resets, is_successful, fresh_ap_into_hp, total_washes, mp_wash_starting_int = 0):
     if is_successful:
         color = 'bg-green-100'
     else:
@@ -252,12 +287,28 @@ def da_thing_results(lvl, health_goal,base_int, washes, health, total_resets, is
     with ui.element('div').classes(color):
         ui.label(f'For {health_goal} HP goal at lvl {lvl} with the registered gears')
         ui.label(f'The most optimal int is: {base_int}')
-        ui.label(f'Fresh AP pent in MP: {washes}')
+        if mp_wash_starting_int:
+            ui.label(f'Start MP washing at {mp_wash_starting_int} base int')
+        ui.label(f'Fresh AP spent in MP: {washes}')
         ui.label(f'Fresh AP spent in HP: {fresh_ap_into_hp}')
         ui.label(f'HP after fully washing is: {health}')
         ui.label(f'Points reset from mana into other stats: {total_washes}')
-        ui.label(f'Washing AP reset cost: {base_int - 4 + washes} (cost of resetting int back to 4 + fresh AP spent in MP)')
+        ui.label(f'Washing AP reset cost: {base_int - 4 + washes} (cost of resetting int back to 4 + fresh AP spent in MP/HP)')
         ui.label(f'Total ap reset costs (including resetting the MP to HP): {total_resets}')
+
+
+@ui.refreshable
+def mage_wash_planner_results(start_level, total_washes, total_hp, total_mp, is_successful):
+    if is_successful:
+        color = 'bg-green-100'
+    else:
+        color = 'bg-red-100'
+    with ui.element('div').classes(color):
+        ui.label(f'To reach your goals at your goal level you need to start washing at level: {start_level}')
+        ui.label(f'Reset scrolls needed: {total_washes}')        
+        ui.label(f'MP after fully washing is: {total_mp}')
+        if total_hp:
+            ui.label(f'HP after fully washing is: {total_hp}')
 
 @ui.refreshable
 def strategy_card(page_manager: Dict[str, Player]):
