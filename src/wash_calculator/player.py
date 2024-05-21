@@ -34,11 +34,10 @@ class Player:
 
     @property
     def total_int(self):
-        total_int = self.INT + self.gears_int
-        if self.level > 10:
-            return int(total_int * (self.maple_warrior_percent / 100 + 1))
+        if self.level > 8:
+            return int(self.INT * (self.maple_warrior_percent / 100 + 1)) + self.gears_int
         else:
-            return total_int
+            return self.INT
 
     @property
     def bonus_mana_on_lvl_up(self): 
